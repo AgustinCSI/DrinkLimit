@@ -8,5 +8,6 @@ Trabajo universitario
 Aplicaciones y tecnológicas Web y movil. Proyecto 1  
 Integrantes:  
 - Agustin Castro  
-- Juan Pablo Molina  
+- Juan Pablo Molina
+
 Aplicación encargada de limitar el consumo de alcohol en estudiantes de 18 a 27 años.
