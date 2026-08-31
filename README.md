@@ -1,6 +1,6 @@
 <div style="display: flex; justify-content: space-between;">
-  <img src="image/README/informatica_white_bg.jpg" alt="Logo UDD" width="320" height="219" style="text-align: right"/>
-  <img src="image/README/DrinkLimitLogo.png" alt="Logo Drinlimit" width="200" height="200" style="text-align: right"/>
+  <img src="image/README/informatica_white_bg.jpg" alt="Logo UDD" width="420" height="219" style="text-align: right"/>
+  <img src="image/README/DrinkLimitLogo.png" alt="Logo Drinlimit" width="100" height="100" style="text-align: right"/>
 </div>
 
 # DrinkLimit
