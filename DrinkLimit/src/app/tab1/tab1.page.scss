@@ -22,6 +22,28 @@ ion-content {
   height: auto;
 }
 
+.configuracion {
+  text-align: center;
+}
+
+.resumen {
+  color: var(--drinklimit-texto);
+  line-height: 1.5;
+}
+
+.temporizador {
+  margin: 12px 0;
+  color: var(--drinklimit-texto);
+  font-size: clamp(32px, 8vw, 44px);
+  font-variant-numeric: tabular-nums;
+}
+
+ion-modal {
+  --width: min(92%, 440px);
+  --height: min(90%, 620px);
+  --border-radius: 20px;
+}
+
 .boton-iniciar {
   --background: var(--drinklimit-rojo);
   --background-hover: var(--drinklimit-rojo-oscuro);

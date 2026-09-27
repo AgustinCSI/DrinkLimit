@@ -12,9 +12,42 @@
       height="1000"
     />
 
-    <!-- El selector de ventanas se conectará en la etapa de interacción. -->
-    <ion-button class="boton-iniciar" type="button">
-      Iniciar Ventana
-    </ion-button>
+    <div class="configuracion">
+      @if (ventanasSeleccionadas() !== null) {
+        <p class="resumen">
+          Ventanas: {{ ventanasSeleccionadas() }} · Duración: {{ duracionSeleccionada() }}
+        </p>
+        <p class="temporizador" role="timer" aria-label="Tiempo restante">
+          {{ tiempoRestante() }}
+        </p>
+      }
+
+      @if (tiempoAgotado()) {
+        <p class="resumen" role="status">Ventana terminada. Se agotó el tiempo.</p>
+      }
+
+      @if (!sesionActiva()) {
+        <ion-button class="boton-iniciar" type="button" (click)="abrirSelector()">
+          Iniciar Ventana
+        </ion-button>
+      }
+    </div>
   </div>
 </ion-content>
+
+<ion-modal
+  [isOpen]="selectorAbierto()"
+  (didDismiss)="cerrarSelector()"
+  aria-label="Seleccionar ventanas"
+>
+  <ng-template>
+    <app-selector-modal
+      titulo="Seleccionar tipo de ventana"
+      descripcion="Cada ventana dura 1 hora y 10 minutos. Elige cuántas tienes seguidas."
+      [opciones]="opcionesVentanas"
+      [valorInicial]="(ventanasSeleccionadas() ?? 1).toString()"
+      (confirmado)="confirmarVentanas($event)"
+      (cancelado)="cerrarSelector()"
+    ></app-selector-modal>
+  </ng-template>
+</ion-modal>
