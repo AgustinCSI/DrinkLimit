@@ -64,7 +64,7 @@ export class LoginPage {
       } else {
         await this.auth.ingresar(email, password);
       }
-      this.router.navigateByUrl("/", { replaceUrl: true });
+      this.router.navigateByUrl("/profile", { replaceUrl: true });
     } catch (e: unknown) {
       this.error.set((e as { message?: string })?.message ?? "No se pudo completar la operación.");
     } finally {
