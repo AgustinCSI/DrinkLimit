@@ -1,0 +1,135 @@
+.inicio {
+  box-sizing: border-box;
+  min-height: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+  padding: 24px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.ilustracion {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+.configuracion {
+  width: 100%;
+  text-align: center;
+}
+
+.inicio.con-sesion {
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.con-sesion .ilustracion {
+  max-width: 230px;
+}
+
+.contador {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  max-width: 320px;
+  margin-inline: auto;
+  padding: 8px;
+  border-radius: 20px;
+  background: var(--drinklimit-rojo);
+}
+
+.control-consumo {
+  flex: 1;
+  margin: 0;
+  height: 104px;
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+.control-consumo img {
+  width: 62px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.simbolo {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--drinklimit-fondo);
+  color: var(--drinklimit-texto);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.cantidad {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 80px;
+  border: 3px solid #ffb800;
+  background: var(--drinklimit-fondo);
+  color: var(--drinklimit-texto);
+}
+
+.cantidad strong {
+  font-size: 40px;
+}
+
+.cantidad span {
+  font-size: 13px;
+}
+
+.boton-detener {
+  margin-top: 16px;
+  min-height: 48px;
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 24px;
+  text-transform: none;
+}
+
+.resumen {
+  line-height: 1.5;
+}
+
+.temporizador {
+  margin: 12px 0;
+  color: var(--drinklimit-texto);
+  font-size: clamp(32px, 8vw, 44px);
+  font-variant-numeric: tabular-nums;
+}
+
+ion-modal {
+  --width: min(92%, 440px);
+  --height: min(90%, 620px);
+  --border-radius: 20px;
+}
+
+.boton-iniciar {
+  --background: var(--drinklimit-rojo);
+  --background-hover: var(--drinklimit-rojo-oscuro);
+  --background-activated: var(--drinklimit-rojo-oscuro);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 16px;
+  --box-shadow: none;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  min-height: 54px;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: none;
+}

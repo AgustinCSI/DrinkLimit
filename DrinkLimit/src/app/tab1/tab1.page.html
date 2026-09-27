@@ -1,7 +1,107 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Inicio
-    </ion-title>
-  </ion-toolbar>
+<ion-header class="ion-no-border">
+  <app-encabezado titulo="Inicio"></app-encabezado>
 </ion-header>
+
+<ion-content>
+  <div class="inicio" [class.con-sesion]="ventanasSeleccionadas() !== null">
+    <img
+      class="ilustracion"
+      src="assets/images/inicio-bebidas.png"
+      alt="Ilustración de bebidas y una jarra de cerveza tocando un acordeón"
+      width="730"
+      height="1000"
+    />
+
+    <div class="configuracion">
+      @if (ventanasSeleccionadas() !== null) {
+        <p class="resumen">
+          Ventanas: {{ ventanasSeleccionadas() }} · Duración: {{ duracionSeleccionada() }}
+        </p>
+        <p class="temporizador" role="timer" aria-label="Tiempo restante">
+          {{ tiempoRestante() }}
+        </p>
+
+        <div class="contador">
+          <ion-button
+            class="control-consumo" type="button" aria-label="Restar la última cerveza"
+            [disabled]="!sesionActiva() || cantidadCervezas() === 0"
+            (click)="restarCerveza()"
+          >
+            <img src="assets/images/cerveza-restar.png" alt="" width="188" height="276" />
+            <span class="simbolo" aria-hidden="true">−</span>
+          </ion-button>
+
+          <div class="cantidad" role="status" aria-live="polite" aria-atomic="true">
+            <strong>{{ cantidadCervezas() }}</strong>
+            <span>{{ cantidadCervezas() === 1 ? 'cerveza' : 'cervezas' }}</span>
+          </div>
+
+          <ion-button
+            class="control-consumo" type="button" aria-label="Añadir una cerveza"
+            [disabled]="!sesionActiva()" (click)="abrirSelectorCerveza()"
+          >
+            <img src="assets/images/cerveza-agregar.png" alt="" width="188" height="276" />
+            <span class="simbolo" aria-hidden="true">+</span>
+          </ion-button>
+        </div>
+
+        @if (ultimaCerveza()) {
+          <p class="resumen">Última registrada: {{ ultimaCerveza() }}</p>
+        }
+
+        @if (sesionActiva()) {
+          <ion-button class="boton-detener" type="button" (click)="detenerPorEmbriaguez()">
+            Detener: estoy borracho
+          </ion-button>
+        }
+      }
+
+      @if (tiempoAgotado()) {
+        <p class="resumen" role="status">Ventana terminada. Se agotó el tiempo.</p>
+      }
+
+      @if (motivoCierre() === 'embriaguez') {
+        <p class="resumen" role="status">Sesión detenida por embriaguez declarada.</p>
+      }
+
+      @if (!sesionActiva()) {
+        <ion-button class="boton-iniciar" type="button" (click)="abrirSelector()">
+          Iniciar Ventana
+        </ion-button>
+      }
+    </div>
+  </div>
+</ion-content>
+
+<ion-modal
+  [isOpen]="selectorAbierto()"
+  (didDismiss)="cerrarSelector()"
+  aria-label="Seleccionar ventanas"
+>
+  <ng-template>
+    <app-selector-modal
+      titulo="Seleccionar tipo de ventana"
+      descripcion="Cada ventana dura 1 hora y 10 minutos. Elige cuántas tienes seguidas."
+      [opciones]="opcionesVentanas"
+      [valorInicial]="(ventanasSeleccionadas() ?? 1).toString()"
+      (confirmado)="confirmarVentanas($event)"
+      (cancelado)="cerrarSelector()"
+    ></app-selector-modal>
+  </ng-template>
+</ion-modal>
+
+<ion-modal
+  [isOpen]="selectorCervezaAbierto()"
+  (didDismiss)="cerrarSelectorCerveza()"
+  aria-label="Seleccionar cerveza"
+>
+  <ng-template>
+    <app-selector-modal
+      titulo="Seleccionar cerveza"
+      descripcion="Elige la cerveza que estás tomando. Confirmar registra una unidad."
+      [opciones]="opcionesCervezas"
+      (confirmado)="confirmarCerveza($event)"
+      (cancelado)="cerrarSelectorCerveza()"
+    ></app-selector-modal>
+  </ng-template>
+</ion-modal>

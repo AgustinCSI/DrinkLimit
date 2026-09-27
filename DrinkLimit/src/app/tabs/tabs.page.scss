@@ -1,1 +1,41 @@
+:host {
+  --ion-background-color: var(--drinklimit-fondo);
+  --ion-text-color: var(--drinklimit-texto);
+}
 
+ion-tab-bar {
+  --background: var(--drinklimit-fondo);
+  --border: 1px solid var(--drinklimit-borde);
+  height: 88px;
+}
+
+ion-tab-button {
+  --color: var(--drinklimit-texto);
+  --color-selected: var(--drinklimit-rojo-oscuro);
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  max-width: 120px;
+}
+
+ion-icon {
+  box-sizing: content-box;
+  width: 30px;
+  height: 30px;
+  padding: 6px 14px;
+  border-radius: 24px;
+  background: var(--drinklimit-rojo);
+  color: var(--drinklimit-fondo);
+}
+
+ion-label {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+ion-tab-button.tab-selected ion-label {
+  font-weight: 700;
+}
+
+ion-tab-button.tab-selected ion-icon {
+  background: var(--drinklimit-rojo-oscuro);
+}

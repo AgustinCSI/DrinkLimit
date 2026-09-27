@@ -1,0 +1,71 @@
+.historial {
+  max-width: 600px;
+  margin-inline: auto;
+  padding: 20px 16px;
+}
+
+.sesion {
+  --background: #bd6365;
+  --color: var(--drinklimit-texto);
+  margin: 0 0 16px;
+  border-radius: 20px;
+  box-shadow: none;
+}
+
+.tono-arena {
+  --background: #bd9565;
+}
+
+.tono-oliva {
+  --background: #bcc05f;
+}
+
+ion-card-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+
+.miniatura {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 76px;
+  border-radius: 14px;
+  background: var(--drinklimit-fondo);
+}
+
+.miniatura ion-icon {
+  font-size: 36px;
+}
+
+.datos {
+  min-width: 0;
+}
+
+.datos h2 {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.datos .cantidad {
+  margin-block: 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.estado-vacio {
+  padding: 40px 8px;
+  color: var(--drinklimit-texto);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.estado-vacio h2 {
+  font-size: 22px;
+}

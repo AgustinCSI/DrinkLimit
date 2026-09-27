@@ -1,0 +1,38 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>{{ titulo }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p class="descripcion">{{ descripcion }}</p>
+
+  <ion-radio-group [(ngModel)]="seleccion" [attr.aria-label]="titulo">
+    <ion-list lines="full">
+      @for (opcion of opciones; track opcion.valor) {
+        <ion-item>
+          <ion-radio [value]="opcion.valor" justify="space-between">
+            {{ opcion.etiqueta }}
+          </ion-radio>
+        </ion-item>
+      }
+    </ion-list>
+  </ion-radio-group>
+
+  @if (opcionSeleccionada?.detalle) {
+    <p class="detalle" aria-live="polite">{{ opcionSeleccionada.detalle }}</p>
+  }
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <div class="acciones">
+      <ion-button fill="outline" type="button" (click)="cancelado.emit()">
+        Cancelar
+      </ion-button>
+      <ion-button type="button" [disabled]="!opcionSeleccionada" (click)="confirmar()">
+        Confirmar
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

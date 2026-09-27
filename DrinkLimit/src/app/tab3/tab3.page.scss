@@ -1,0 +1,91 @@
+.perfil {
+  max-width: 520px;
+  margin-inline: auto;
+  padding: 24px;
+}
+
+.foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+ion-avatar {
+  display: grid;
+  place-items: center;
+  width: 144px;
+  height: 144px;
+  background: #e8f4fa;
+  overflow: hidden;
+}
+
+ion-avatar ion-icon {
+  font-size: 80px;
+}
+
+.nombre {
+  font-size: 22px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.fila, .acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nacimiento, .nota {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+ion-input, ion-select {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--drinklimit-borde);
+}
+
+ion-button {
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 12px;
+  min-height: 44px;
+  text-transform: none;
+}
+
+ion-button[fill='outline'] {
+  --background: transparent;
+  --color: var(--drinklimit-rojo);
+  --border-color: var(--drinklimit-rojo);
+}
+
+.estadisticas {
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  margin: 24px 0 0;
+  border-radius: 20px;
+}
+
+.estadisticas h2 {
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.error {
+  color: var(--drinklimit-rojo-oscuro);
+}
