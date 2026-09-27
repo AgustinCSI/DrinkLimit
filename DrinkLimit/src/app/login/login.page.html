@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Entrar 🔐</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="modo" (ngModelChange)="limpiarMensajes()">
+    <ion-segment-button value="entrar"><ion-label>Entrar</ion-label></ion-segment-button>
+    <ion-segment-button value="crear"><ion-label>Crear cuenta</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <form [formGroup]="form" (ngSubmit)="enviar()">
+    <ion-list>
+      <ion-item>
+        <ion-input
+          label="Correo" labelPlacement="stacked" type="email"
+          placeholder="tu@correo.com" formControlName="email"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="Contraseña" labelPlacement="stacked" type="password"
+          placeholder="mínimo 6 caracteres" formControlName="password"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    @if (error()) {
+      <ion-text color="danger"><p class="ion-padding-start">{{ error() }}</p></ion-text>
+    }
+
+    @if (aviso()) {
+      <ion-text color="success"><p class="ion-padding-start">{{ aviso() }}</p></ion-text>
+    }
+
+    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="cargando()">
+      @if (cargando()) {
+        <ion-spinner name="dots"></ion-spinner>
+      } @else {
+        {{ modo() === "crear" ? "Crear cuenta" : "Entrar" }}
+      }
+    </ion-button>
+  </form>
+</ion-content>
