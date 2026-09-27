@@ -11,25 +11,16 @@ export interface AppUser {
   weight: number | null;
 }
 
-// Lo que viene del formulario: sin id ni created_at (esos los pone Supabase).
-export type NuevoPerro = Omit<AppUser, 'id' | 'created_at'>;
+// Lo que se puede editar desde el perfil: todo menos el id (ese lo pone Supabase Auth).
+export type PerfilEditable = Omit<AppUser, 'id'>;
 
 @Injectable({ providedIn: 'root' })
-export class PerrosService {
-  // Trae todos los perritos desde Supabase (los más nuevos primero).
-  async todas(): Promise<AppUser[]> {
-    const { data, error } = await supabase
-      .from('perros')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return (data ?? []) as AppUser[];
-  }
+export class UsersService {
 
-  // Trae un perrito por su id.
+  // Trae el perfil de un usuario por su id.
   async obtener(id: string): Promise<AppUser | undefined> {
     const { data, error } = await supabase
-      .from('perros')
+      .from('users')
       .select('*')
       .eq('id', id)
       .maybeSingle();
@@ -37,18 +28,11 @@ export class PerrosService {
     return (data ?? undefined) as AppUser | undefined;
   }
 
-  // Guarda un perrito nuevo.
-  async agregar(datos: NuevoPerro): Promise<void> {
-    const { error } = await supabase.from('perros').insert(datos);
-    if (error) throw error;
-  }
-
-  // Marca un perrito como adoptado.
-  async adoptar(id: string): Promise<void> {
+  // Crea o actualiza el perfil del usuario logueado (upsert = "si existe, actualiza; si no, crea").
+  async guardarPerfil(id: string, datos: PerfilEditable): Promise<void> {
     const { error } = await supabase
-      .from('perros')
-      .update({ adoptado: true })
-      .eq('id', id);
+      .from('users')
+      .upsert({ id, ...datos });
     if (error) throw error;
   }
 }
