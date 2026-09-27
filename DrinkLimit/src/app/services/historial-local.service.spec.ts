@@ -29,4 +29,27 @@ describe('HistorialLocalService', () => {
       { marca: 'Corona', fecha: '2026-09-27T18:05:00.000Z' },
     ]);
   });
+  it('distingue el máximo general del máximo por embriaguez y actualiza los indicadores', () => {
+    const servicio = new HistorialLocalService();
+    expect(servicio.vecesCurado()).toBe(0);
+    expect(servicio.topeTragos()).toBeNull();
+    expect(servicio.limitePersonal()).toBeNull();
+    const consumos = (cantidad: number) => Array.from({ length: cantidad }, () => crearSesion().consumos[0]!);
+    servicio.guardar({ ...crearSesion(), consumos: consumos(12) });
+    expect(servicio.topeTragos()).toBe(12);
+    expect(servicio.limitePersonal()).toBeNull();
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez', consumos: consumos(10) });
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez', consumos: consumos(5) });
+    expect(servicio.vecesCurado()).toBe(2);
+    expect(servicio.topeTragos()).toBe(12);
+    expect(servicio.limitePersonal()).toBe(10);
+  });
+
+  it('distingue cero consumos de la ausencia de datos', () => {
+    const servicio = new HistorialLocalService();
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez', consumos: [] });
+    expect(servicio.topeTragos()).toBe(0);
+    expect(servicio.limitePersonal()).toBe(0);
+  });
+
 });
