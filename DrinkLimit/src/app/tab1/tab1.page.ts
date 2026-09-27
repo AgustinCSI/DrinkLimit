@@ -2,6 +2,7 @@ import { Component, HostListener, OnDestroy, computed, signal } from '@angular/c
 import { IonHeader, IonContent, IonButton, IonModal } from '@ionic/angular';
 import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
 import { OpcionSelector, SelectorModalComponent } from '../components/selector-modal/selector-modal.component';
+import { Consumo } from '../models/consumo.model';
 
 @Component({
   selector: 'app-tab1',
@@ -11,10 +12,15 @@ import { OpcionSelector, SelectorModalComponent } from '../components/selector-m
 })
 export class Tab1Page implements OnDestroy {
   selectorAbierto = signal(false);
+  selectorCervezaAbierto = signal(false);
   ventanasSeleccionadas = signal<number | null>(null);
   sesionActiva = signal(false);
-  tiempoAgotado = signal(false);
+  motivoCierre = signal<'tiempo' | 'embriaguez' | null>(null);
+  tiempoAgotado = computed(() => this.motivoCierre() === 'tiempo');
   segundosRestantes = signal(0);
+  consumos = signal<Consumo[]>([]);
+  cantidadCervezas = computed(() => this.consumos().length);
+  ultimaCerveza = computed(() => this.consumos().at(-1)?.marca ?? '');
 
   private finVentana: number | null = null;
   private intervalo: ReturnType<typeof setInterval> | null = null;
@@ -24,6 +30,9 @@ export class Tab1Page implements OnDestroy {
     etiqueta: cantidad === 1 ? '1 ventana' : `${cantidad} ventanas seguidas`,
     detalle: `Duración total: ${this.calcularDuracion(cantidad)}`,
   }));
+
+  opcionesCervezas: OpcionSelector[] = ['Corona', 'Austral', 'Becker', 'Patagonia', 'Cusqueña']
+    .map((marca) => ({ valor: marca, etiqueta: marca }));
 
   duracionSeleccionada = computed(() => {
     const cantidad = this.ventanasSeleccionadas();
@@ -51,11 +60,44 @@ export class Tab1Page implements OnDestroy {
     this.ventanasSeleccionadas.set(cantidad);
     this.segundosRestantes.set(duracionSegundos);
     this.finVentana = Date.now() + duracionSegundos * 1000;
-    this.tiempoAgotado.set(false);
+    this.motivoCierre.set(null);
+    this.consumos.set([]);
     this.sesionActiva.set(true);
     this.cerrarSelector();
     this.detenerIntervalo();
     this.intervalo = setInterval(() => this.actualizarTiempo(), 1000);
+  }
+
+  abrirSelectorCerveza() {
+    this.actualizarTiempo();
+    if (!this.sesionActiva()) return;
+    this.selectorCervezaAbierto.set(true);
+  }
+
+  cerrarSelectorCerveza() {
+    this.selectorCervezaAbierto.set(false);
+  }
+
+  confirmarCerveza(marca: string) {
+    this.actualizarTiempo();
+    if (!this.sesionActiva() || !this.selectorCervezaAbierto()) return;
+    if (!this.opcionesCervezas.some((opcion) => opcion.valor === marca)) return;
+
+    const consumo: Consumo = { marca, fecha: new Date().toISOString() };
+    this.consumos.update((actuales) => [...actuales, consumo]);
+    this.cerrarSelectorCerveza();
+  }
+
+  restarCerveza() {
+    this.actualizarTiempo();
+    if (!this.sesionActiva() || this.cantidadCervezas() === 0) return;
+    this.consumos.update((actuales) => actuales.slice(0, -1));
+  }
+
+  detenerPorEmbriaguez() {
+    this.actualizarTiempo();
+    if (!this.sesionActiva()) return;
+    this.finalizarSesion('embriaguez');
   }
 
   ionViewWillEnter() {
@@ -71,14 +113,19 @@ export class Tab1Page implements OnDestroy {
     this.segundosRestantes.set(segundos);
 
     if (segundos === 0) {
-      this.sesionActiva.set(false);
-      this.tiempoAgotado.set(true);
-      this.finVentana = null;
-      this.detenerIntervalo();
+      this.finalizarSesion('tiempo');
     }
   }
 
   ngOnDestroy() {
+    this.detenerIntervalo();
+  }
+
+  private finalizarSesion(motivo: 'tiempo' | 'embriaguez') {
+    this.sesionActiva.set(false);
+    this.motivoCierre.set(motivo);
+    this.cerrarSelectorCerveza();
+    this.finVentana = null;
     this.detenerIntervalo();
   }
 

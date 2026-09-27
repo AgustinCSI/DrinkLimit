@@ -93,4 +93,92 @@ describe('Tab1Page', () => {
     component.ngOnDestroy();
     expect(vi.getTimerCount()).toBe(0);
   });
+
+  it.each(['Corona', 'Austral', 'Becker', 'Patagonia', 'Cusqueña'])(
+    'registra una cerveza %s con fecha solo al confirmar', (marca) => {
+      component.confirmarVentanas('1');
+      component.abrirSelectorCerveza();
+      expect(component.cantidadCervezas()).toBe(0);
+      component.confirmarCerveza(marca);
+      expect(component.consumos()).toEqual([{ marca, fecha: new Date().toISOString() }]);
+      expect(component.cantidadCervezas()).toBe(1);
+      expect(component.selectorCervezaAbierto()).toBe(false);
+      component.confirmarCerveza(marca);
+      expect(component.cantidadCervezas()).toBe(1);
+    },
+  );
+
+  it('cancelar o confirmar una marca inexistente no suma', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Otra');
+    expect(component.cantidadCervezas()).toBe(0);
+    component.cerrarSelectorCerveza();
+    expect(component.cantidadCervezas()).toBe(0);
+  });
+
+  it('resta el último registro, conserva los anteriores y nunca baja de cero', () => {
+    component.confirmarVentanas('1');
+    for (const marca of ['Corona', 'Austral']) {
+      component.abrirSelectorCerveza();
+      component.confirmarCerveza(marca);
+    }
+    component.restarCerveza();
+    expect(component.cantidadCervezas()).toBe(1);
+    expect(component.ultimaCerveza()).toBe('Corona');
+    component.restarCerveza();
+    component.restarCerveza();
+    expect(component.cantidadCervezas()).toBe(0);
+  });
+
+  it('detener manualmente conserva el consumo y bloquea cambios posteriores', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Becker');
+    vi.advanceTimersByTime(1000);
+    component.detenerPorEmbriaguez();
+    expect(component.motivoCierre()).toBe('embriaguez');
+    expect(component.sesionActiva()).toBe(false);
+    expect(component.tiempoRestante()).toBe('01:09:59');
+    expect(vi.getTimerCount()).toBe(0);
+    component.restarCerveza();
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Corona');
+    expect(component.selectorCervezaAbierto()).toBe(false);
+    expect(component.cantidadCervezas()).toBe(1);
+  });
+
+  it('si vence el tiempo con el selector abierto, no admite una confirmación tardía', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    vi.setSystemTime(Date.now() + 70 * 60 * 1000);
+    component.confirmarCerveza('Corona');
+    expect(component.selectorCervezaAbierto()).toBe(false);
+    expect(component.cantidadCervezas()).toBe(0);
+    expect(component.motivoCierre()).toBe('tiempo');
+    component.detenerPorEmbriaguez();
+    expect(component.motivoCierre()).toBe('tiempo');
+  });
+
+  it('no deja restar después del vencimiento aunque el intervalo todavía no haya corrido', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Patagonia');
+    vi.setSystemTime(Date.now() + 70 * 60 * 1000);
+    component.restarCerveza();
+    expect(component.cantidadCervezas()).toBe(1);
+    expect(component.motivoCierre()).toBe('tiempo');
+  });
+
+  it('una nueva sesión comienza sin consumos ni motivo de cierre anterior', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Cusqueña');
+    component.detenerPorEmbriaguez();
+    component.confirmarVentanas('2');
+    expect(component.cantidadCervezas()).toBe(0);
+    expect(component.ultimaCerveza()).toBe('');
+    expect(component.motivoCierre()).toBeNull();
+    expect(component.tiempoRestante()).toBe('02:20:00');
+  });
 });
