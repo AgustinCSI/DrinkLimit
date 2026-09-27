@@ -2,4 +2,33 @@
   <app-encabezado titulo="Historial"></app-encabezado>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <div class="historial">
+    @for (sesion of sesiones(); track sesion.id; let indice = $index) {
+      <ion-card
+        class="sesion"
+        [class.tono-arena]="indice % 3 === 1"
+        [class.tono-oliva]="indice % 3 === 2"
+      >
+        <ion-card-content>
+          <div class="miniatura" aria-hidden="true">
+            <ion-icon name="image-outline"></ion-icon>
+          </div>
+          <div class="datos">
+            <h2>
+              <span>Fecha: {{ sesion.inicio | date: 'dd/MM/yyyy' }}</span>
+              <span>Hora: {{ sesion.inicio | date: 'HH:mm' }}</span>
+            </h2>
+            <p class="cantidad">Cervezas: {{ sesion.consumos.length }}</p>
+            <p>{{ sesion.motivoCierre === 'embriaguez' ? 'Embriaguez declarada' : 'Fin por tiempo' }}</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    } @empty {
+      <div class="estado-vacio" role="status">
+        <h2>Aún no tienes sesiones registradas</h2>
+        <p>Las sesiones aparecerán aquí cuando terminen por tiempo o las detengas desde Inicio.</p>
+      </div>
+    }
+  </div>
+</ion-content>

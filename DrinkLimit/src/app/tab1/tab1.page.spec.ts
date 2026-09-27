@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Tab1Page } from './tab1.page';
+import { HistorialLocalService } from '../services/historial-local.service';
 
 describe('Tab1Page', () => {
   let component: Tab1Page;
@@ -180,5 +181,45 @@ describe('Tab1Page', () => {
     expect(component.ultimaCerveza()).toBe('');
     expect(component.motivoCierre()).toBeNull();
     expect(component.tiempoRestante()).toBe('02:20:00');
+  });
+
+  it('solo guarda al finalizar y conserva la primera sesión al iniciar otra', () => {
+    const historial = TestBed.inject(HistorialLocalService);
+    const inicio = new Date().toISOString();
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Corona');
+    expect(historial.sesiones()).toHaveLength(0);
+    vi.advanceTimersByTime(2000);
+    component.detenerPorEmbriaguez();
+    component.detenerPorEmbriaguez();
+    component.actualizarTiempo();
+    expect(historial.sesiones()).toHaveLength(1);
+    expect(historial.sesiones()[0]).toMatchObject({
+      inicio,
+      fin: new Date().toISOString(),
+      motivoCierre: 'embriaguez',
+      ventanas: 1,
+    });
+    component.confirmarVentanas('2');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Austral');
+    expect(historial.sesiones()[0]!.consumos[0]!.marca).toBe('Corona');
+    expect(historial.sesiones()).toHaveLength(1);
+  });
+
+  it('guarda el fin previsto al expirar en segundo plano, incluso con cero consumos', () => {
+    const historial = TestBed.inject(HistorialLocalService);
+    const inicio = Date.now();
+    component.confirmarVentanas('1');
+    vi.setSystemTime(inicio + 80 * 60 * 1000);
+    component.actualizarTiempo();
+    component.ionViewWillEnter();
+    expect(historial.sesiones()).toHaveLength(1);
+    expect(historial.sesiones()[0]).toMatchObject({
+      fin: new Date(inicio + 70 * 60 * 1000).toISOString(),
+      motivoCierre: 'tiempo',
+      consumos: [],
+    });
   });
 });

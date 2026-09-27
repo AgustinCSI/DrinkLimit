@@ -1,8 +1,10 @@
-import { Component, HostListener, OnDestroy, computed, signal } from '@angular/core';
+import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
 import { IonHeader, IonContent, IonButton, IonModal } from '@ionic/angular';
 import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
 import { OpcionSelector, SelectorModalComponent } from '../components/selector-modal/selector-modal.component';
 import { Consumo } from '../models/consumo.model';
+import { MotivoCierre } from '../models/sesion-finalizada.model';
+import { HistorialLocalService } from '../services/historial-local.service';
 
 @Component({
   selector: 'app-tab1',
@@ -11,11 +13,12 @@ import { Consumo } from '../models/consumo.model';
   imports: [IonHeader, IonContent, IonButton, IonModal, EncabezadoComponent, SelectorModalComponent],
 })
 export class Tab1Page implements OnDestroy {
+  private historial = inject(HistorialLocalService);
   selectorAbierto = signal(false);
   selectorCervezaAbierto = signal(false);
   ventanasSeleccionadas = signal<number | null>(null);
   sesionActiva = signal(false);
-  motivoCierre = signal<'tiempo' | 'embriaguez' | null>(null);
+  motivoCierre = signal<MotivoCierre | null>(null);
   tiempoAgotado = computed(() => this.motivoCierre() === 'tiempo');
   segundosRestantes = signal(0);
   consumos = signal<Consumo[]>([]);
@@ -23,6 +26,7 @@ export class Tab1Page implements OnDestroy {
   ultimaCerveza = computed(() => this.consumos().at(-1)?.marca ?? '');
 
   private finVentana: number | null = null;
+  private inicioVentana: number | null = null;
   private intervalo: ReturnType<typeof setInterval> | null = null;
 
   opcionesVentanas: OpcionSelector[] = [1, 2, 3, 4, 5, 6].map((cantidad) => ({
@@ -59,7 +63,8 @@ export class Tab1Page implements OnDestroy {
     const duracionSegundos = cantidad * 70 * 60;
     this.ventanasSeleccionadas.set(cantidad);
     this.segundosRestantes.set(duracionSegundos);
-    this.finVentana = Date.now() + duracionSegundos * 1000;
+    this.inicioVentana = Date.now();
+    this.finVentana = this.inicioVentana + duracionSegundos * 1000;
     this.motivoCierre.set(null);
     this.consumos.set([]);
     this.sesionActiva.set(true);
@@ -121,11 +126,24 @@ export class Tab1Page implements OnDestroy {
     this.detenerIntervalo();
   }
 
-  private finalizarSesion(motivo: 'tiempo' | 'embriaguez') {
+  private finalizarSesion(motivo: MotivoCierre) {
+    const ventanas = this.ventanasSeleccionadas();
+    if (!this.sesionActiva() || this.inicioVentana === null || this.finVentana === null || ventanas === null) return;
+
+    // Si el navegador estuvo pausado, el fin por tiempo sigue siendo la hora prevista.
+    const fin = motivo === 'tiempo' ? this.finVentana : Date.now();
+    this.historial.guardar({
+      inicio: new Date(this.inicioVentana).toISOString(),
+      fin: new Date(fin).toISOString(),
+      ventanas,
+      motivoCierre: motivo,
+      consumos: this.consumos(),
+    });
     this.sesionActiva.set(false);
     this.motivoCierre.set(motivo);
     this.cerrarSelectorCerveza();
     this.finVentana = null;
+    this.inicioVentana = null;
     this.detenerIntervalo();
   }
 
