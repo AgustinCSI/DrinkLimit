@@ -11,3 +11,10 @@ Integrantes:
 - Juan Pablo Molina
 
 Aplicación encargada de limitar el consumo de alcohol en estudiantes de 18 a 27 años.
+
+
+## Lore del proceso:
+
+### 22/09/2026 - setupInicial:
+Se realiza una limpieza y se sentan las bases del proyecto, eliminando y creando carpeta.
+

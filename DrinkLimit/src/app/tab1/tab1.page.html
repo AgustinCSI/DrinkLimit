@@ -1,7 +1,30 @@
-<ion-header [translucent]="true">
+<ion-header class="ion-no-border">
   <ion-toolbar>
-    <ion-title>
-      Inicio
-    </ion-title>
+    <img
+      slot="start"
+      class="logo"
+      src="assets/icon/DrinkLimitLogo.png"
+      alt="DrinkLimit"
+      width="56"
+      height="56"
+    />
+    <ion-title>Inicio</ion-title>
   </ion-toolbar>
 </ion-header>
+
+<ion-content>
+  <div class="inicio">
+    <img
+      class="ilustracion"
+      src="assets/images/inicio-bebidas.png"
+      alt="Ilustración de bebidas y una jarra de cerveza tocando un acordeón"
+      width="730"
+      height="1000"
+    />
+
+    <!-- El selector de ventanas se conectará en la etapa de interacción. -->
+    <ion-button class="boton-iniciar" type="button">
+      Iniciar Ventana
+    </ion-button>
+  </div>
+</ion-content>
