@@ -1,0 +1,107 @@
+ion-content {
+  --background: var(--drinklimit-fondo);
+}
+
+// Centra la tarjeta en la pantalla, sin que ocupe todo el ancho.
+.contenedor {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 24px;
+  border: 1px solid var(--drinklimit-borde);
+  border-radius: 12px;
+  background: var(--drinklimit-fondo);
+}
+
+.logo {
+  align-self: center;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--drinklimit-texto);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Selector Entrar / Crear cuenta
+ion-segment {
+  --background: transparent;
+  border: 1px solid var(--drinklimit-borde);
+  border-radius: 8px;
+}
+
+ion-segment-button {
+  --color: var(--drinklimit-texto);
+  --color-checked: var(--drinklimit-rojo);
+  --indicator-color: var(--drinklimit-rojo);
+  --border-radius: 8px;
+  text-transform: none;
+}
+
+// Campos de texto
+ion-input {
+  --border-color: var(--drinklimit-borde);
+  --border-radius: 8px;
+  --highlight-color-focused: var(--drinklimit-rojo);
+  --color: var(--drinklimit-texto);
+}
+
+.error-campo {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--drinklimit-rojo-oscuro);
+}
+
+// Mensajes de arriba del botón (error del servidor o aviso)
+.alerta {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.alerta-error {
+  color: var(--drinklimit-rojo-oscuro);
+  background: #fdecec;
+  border: 1px solid var(--drinklimit-rojo);
+}
+
+.alerta-aviso {
+  color: var(--drinklimit-texto);
+  background: #f5f5f5;
+  border: 1px solid var(--drinklimit-borde);
+}
+
+// Botón principal en rojo DrinkLimit
+ion-button {
+  --background: var(--drinklimit-rojo);
+  --background-hover: var(--drinklimit-rojo-oscuro);
+  --background-activated: var(--drinklimit-rojo-oscuro);
+  --background-focused: var(--drinklimit-rojo-oscuro);
+  --color: #ffffff;
+  --border-radius: 8px;
+  margin: 4px 0 0;
+  text-transform: none;
+  font-weight: 500;
+}

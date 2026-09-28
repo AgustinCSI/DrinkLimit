@@ -1,0 +1,104 @@
+<ion-content>
+  <div class="contenedor">
+    <main class="tarjeta">
+      <img
+        class="logo"
+        src="assets/icon/DrinkLimitLogo.png"
+        alt="DrinkLimit"
+        width="72"
+        height="72"
+      />
+      <h1>Completa tu perfil</h1>
+      <p class="intro">Necesitamos estos datos antes de que puedas usar DrinkLimit.</p>
+
+      @if (cargando()) {
+        <div class="cargando"><ion-spinner></ion-spinner></div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+          <div class="campo">
+            <ion-input
+              label="Nombre" labelPlacement="stacked" fill="outline"
+              formControlName="first_name" (ionInput)="limpiarError()"
+            ></ion-input>
+            @if (errorCampo("first_name")) {
+              <p class="error-campo" role="alert">{{ errorCampo("first_name") }}</p>
+            }
+          </div>
+
+          <div class="campo">
+            <ion-input
+              label="Apellido" labelPlacement="stacked" fill="outline"
+              formControlName="last_name" (ionInput)="limpiarError()"
+            ></ion-input>
+            @if (errorCampo("last_name")) {
+              <p class="error-campo" role="alert">{{ errorCampo("last_name") }}</p>
+            }
+          </div>
+
+          <div class="campo">
+            <ion-input
+              label="Nombre de usuario" labelPlacement="stacked" fill="outline"
+              placeholder="mínimo 3 caracteres"
+              formControlName="username" (ionInput)="limpiarError()"
+            ></ion-input>
+            @if (errorCampo("username")) {
+              <p class="error-campo" role="alert">{{ errorCampo("username") }}</p>
+            }
+          </div>
+
+          <div class="campo">
+            <ion-input
+              label="Fecha de nacimiento" labelPlacement="stacked" fill="outline" type="date"
+              formControlName="birth_date" (ionInput)="limpiarError()"
+            ></ion-input>
+            <p class="ayuda">No podrás cambiarla después.</p>
+            @if (errorCampo("birth_date")) {
+              <p class="error-campo" role="alert">{{ errorCampo("birth_date") }}</p>
+            }
+          </div>
+
+          <div class="campo">
+            <ion-select
+              label="Sexo" labelPlacement="stacked" fill="outline"
+              formControlName="gender" cancelText="Cancelar" okText="Aceptar"
+              (ionChange)="limpiarError()"
+            >
+              <ion-select-option value="M">M</ion-select-option>
+              <ion-select-option value="F">F</ion-select-option>
+              <ion-select-option value="Otro">Otro</ion-select-option>
+            </ion-select>
+            @if (errorCampo("gender")) {
+              <p class="error-campo" role="alert">{{ errorCampo("gender") }}</p>
+            }
+          </div>
+
+          <div class="campo">
+            <ion-input
+              label="Peso (kg), opcional" labelPlacement="stacked" fill="outline" type="number"
+              formControlName="weight" (ionInput)="limpiarError()"
+            ></ion-input>
+            @if (errorCampo("weight")) {
+              <p class="error-campo" role="alert">{{ errorCampo("weight") }}</p>
+            }
+          </div>
+
+          @if (error()) {
+            <p class="alerta alerta-error" role="alert">{{ error() }}</p>
+          }
+
+          <ion-button expand="block" type="submit" [disabled]="guardando()">
+            @if (guardando()) {
+              <ion-spinner name="dots"></ion-spinner>
+            } @else {
+              Guardar y continuar
+            }
+          </ion-button>
+        </form>
+
+        <ion-button class="secundario" fill="clear" type="button" (click)="salir()">
+          Usar otra cuenta
+        </ion-button>
+      }
+    </main>
+  </div>
+</ion-content>

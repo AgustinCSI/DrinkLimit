@@ -1,45 +1,58 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Entrar 🔐</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="contenedor">
+    <main class="tarjeta">
+      <img
+        class="logo"
+        src="assets/icon/DrinkLimitLogo.png"
+        alt="DrinkLimit"
+        width="72"
+        height="72"
+      />
+      <h1>{{ modo() === "crear" ? "Crea tu cuenta" : "Entra a DrinkLimit" }}</h1>
 
-<ion-content class="ion-padding">
-  <ion-segment [(ngModel)]="modo" (ngModelChange)="limpiarMensajes()">
-    <ion-segment-button value="entrar"><ion-label>Entrar</ion-label></ion-segment-button>
-    <ion-segment-button value="crear"><ion-label>Crear cuenta</ion-label></ion-segment-button>
-  </ion-segment>
+      <ion-segment [(ngModel)]="modo" (ngModelChange)="cambiarModo()">
+        <ion-segment-button value="entrar"><ion-label>Entrar</ion-label></ion-segment-button>
+        <ion-segment-button value="crear"><ion-label>Crear cuenta</ion-label></ion-segment-button>
+      </ion-segment>
 
-  <form [formGroup]="form" (ngSubmit)="enviar()">
-    <ion-list>
-      <ion-item>
-        <ion-input
-          label="Correo" labelPlacement="stacked" type="email"
-          placeholder="tu@correo.com" formControlName="email"
-        ></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-input
-          label="Contraseña" labelPlacement="stacked" type="password"
-          placeholder="mínimo 6 caracteres" formControlName="password"
-        ></ion-input>
-      </ion-item>
-    </ion-list>
+      <form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+        <div class="campo">
+          <ion-input
+            label="Correo" labelPlacement="stacked" fill="outline" type="email"
+            placeholder="tu@correo.com" formControlName="email"
+            (ionInput)="limpiarMensajes()"
+          ></ion-input>
+          @if (errorEmail()) {
+            <p class="error-campo" role="alert">{{ errorEmail() }}</p>
+          }
+        </div>
 
-    @if (error()) {
-      <ion-text color="danger"><p class="ion-padding-start">{{ error() }}</p></ion-text>
-    }
+        <div class="campo">
+          <ion-input
+            label="Contraseña" labelPlacement="stacked" fill="outline" type="password"
+            placeholder="mínimo 6 caracteres" formControlName="password"
+            (ionInput)="limpiarMensajes()"
+          ></ion-input>
+          @if (errorPassword()) {
+            <p class="error-campo" role="alert">{{ errorPassword() }}</p>
+          }
+        </div>
 
-    @if (aviso()) {
-      <ion-text color="success"><p class="ion-padding-start">{{ aviso() }}</p></ion-text>
-    }
+        @if (error()) {
+          <p class="alerta alerta-error" role="alert">{{ error() }}</p>
+        }
+        @if (aviso()) {
+          <p class="alerta alerta-aviso" role="status">{{ aviso() }}</p>
+        }
 
-    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="cargando()">
-      @if (cargando()) {
-        <ion-spinner name="dots"></ion-spinner>
-      } @else {
-        {{ modo() === "crear" ? "Crear cuenta" : "Entrar" }}
-      }
-    </ion-button>
-  </form>
+        <ion-button expand="block" type="submit" [disabled]="cargando()">
+          @if (cargando()) {
+            <ion-spinner name="dots"></ion-spinner>
+          } @else {
+            {{ modo() === "crear" ? "Crear cuenta" : "Entrar" }}
+          }
+        </ion-button>
+      </form>
+    </main>
+  </div>
 </ion-content>
