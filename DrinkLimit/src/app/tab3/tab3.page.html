@@ -64,5 +64,15 @@
         <p class="nota">Límite histórico: mayor consumo registrado en una sesión terminada por embriaguez.</p>
       </ion-card-content>
     </ion-card>
+    <ion-button
+      class="boton-cerrar-sesion"
+      expand="block"
+      fill="outline"
+      type="button"
+      (click)="cerrarSesion()"
+    >
+      <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+      Cerrar sesión
+    </ion-button>
   </div>
 </ion-content>
