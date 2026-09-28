@@ -1,0 +1,33 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Tu recuerdo</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrado.emit()" aria-label="Cerrar recuerdo">Cerrar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="contenido">
+    @if (generando()) { <p role="status">Preparando tu recuerdo…</p> }
+    @if (error()) {
+      <p role="alert">{{ error() }}</p>
+      <ion-button (click)="generar()">Reintentar</ion-button>
+    }
+    @if (imagenUrl()) {
+      <img [src]="imagenUrl()" alt="Recuerdo DrinkLimit con tu foto y estadísticas" />
+      <p class="resumen">
+        Veces curado: {{ datos.vecesCurado }} · Tope de tragos: {{ datos.topeTragos ?? 'Sin datos' }} ·
+        Límite histórico: {{ datos.limitePersonal ?? 'Sin datos' }}
+      </p>
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="acciones">
+    <ion-button [href]="imagenUrl() || undefined" download="drinklimit-recuerdo.png" [disabled]="!imagenUrl() || generando()">
+      Compartir · Descargar PNG
+    </ion-button>
+  </div>
+</ion-footer>

@@ -3,7 +3,7 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput,
-  IonSelect, IonSelectOption, IonCard, IonCardContent, IonNote,
+  IonSelect, IonSelectOption, IonCard, IonCardContent, IonNote, IonModal,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personOutline } from 'ionicons/icons';
@@ -11,6 +11,8 @@ import { EncabezadoComponent } from '../components/encabezado/encabezado.compone
 import { Sexo } from '../models/perfil-local.model';
 import { PerfilLocalService } from '../services/perfil-local.service';
 import { HistorialLocalService } from '../services/historial-local.service';
+import { DatosRecuerdo } from '../services/recuerdo.service';
+import { RecuerdoModalComponent } from '../components/recuerdo-modal/recuerdo-modal.component';
 
 @Component({
   selector: 'app-tab3',
@@ -19,6 +21,7 @@ import { HistorialLocalService } from '../services/historial-local.service';
   imports: [
     IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput, IonSelect,
     IonSelectOption, IonCard, IonCardContent, IonNote, FormsModule, DatePipe, EncabezadoComponent,
+    IonModal, RecuerdoModalComponent,
   ],
 })
 export class Tab3Page implements OnDestroy {
@@ -36,6 +39,8 @@ export class Tab3Page implements OnDestroy {
   fotoBorrador = signal<string | null>(null);
   error = signal('');
   aviso = signal('');
+  recuerdoAbierto = signal(false);
+  datosRecuerdo: DatosRecuerdo = { vecesCurado: 0, topeTragos: null, limitePersonal: null, foto: null };
   borrador: { first_name: string; last_name: string; gender: Sexo } = {
     first_name: '', last_name: '', gender: 'Otro',
   };
@@ -58,6 +63,17 @@ export class Tab3Page implements OnDestroy {
 
   ionViewWillEnter() {
     this.hoy.set(new Date());
+  }
+
+  abrirRecuerdo() {
+    // Una copia fija permite que la vista previa y el PNG tengan los mismos datos.
+    this.datosRecuerdo = {
+      vecesCurado: this.vecesCurado(),
+      topeTragos: this.topeTragos(),
+      limitePersonal: this.limitePersonal(),
+      foto: this.perfil().foto,
+    };
+    this.recuerdoAbierto.set(true);
   }
 
   editar() {

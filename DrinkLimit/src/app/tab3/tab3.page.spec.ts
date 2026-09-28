@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Tab3Page } from './tab3.page';
+import { HistorialLocalService } from '../services/historial-local.service';
 
 describe('Tab3Page', () => {
   let component: Tab3Page;
@@ -14,6 +15,19 @@ describe('Tab3Page', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('el recuerdo usa los datos guardados y se actualiza al volver a abrirlo', () => {
+    const historial = TestBed.inject(HistorialLocalService);
+    component.abrirRecuerdo();
+    expect(component.recuerdoAbierto()).toBe(true);
+    expect(component.datosRecuerdo.topeTragos).toBeNull();
+    historial.guardar({ inicio: '2026-09-27T18:00:00Z', fin: '2026-09-27T18:10:00Z',
+      ventanas: 1, motivoCierre: 'embriaguez', consumos: [] });
+    expect(component.datosRecuerdo.topeTragos).toBeNull();
+    component.abrirRecuerdo();
+    expect(component.datosRecuerdo.topeTragos).toBe(0);
+    expect(component.datosRecuerdo.vecesCurado).toBe(1);
   });
 
   afterEach(() => {

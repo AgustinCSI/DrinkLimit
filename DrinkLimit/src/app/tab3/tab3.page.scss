@@ -89,3 +89,16 @@ dd {
 .error {
   color: var(--drinklimit-rojo-oscuro);
 }
+
+.boton-recuerdo {
+  --background: #ffb600;
+  --color: #171717;
+  margin-top: 20px;
+  font-weight: 700;
+}
+
+ion-modal {
+  --width: min(92%, 460px);
+  --height: min(90%, 800px);
+  --border-radius: 20px;
+}

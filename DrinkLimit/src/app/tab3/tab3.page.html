@@ -62,7 +62,16 @@
           <div><dt>Límite histórico</dt><dd>{{ limitePersonal() ?? 'Sin datos' }}</dd></div>
         </dl>
         <p class="nota">Límite histórico: mayor consumo registrado en una sesión terminada por embriaguez.</p>
+        <ion-button class="boton-recuerdo" expand="block" (click)="abrirRecuerdo()" [disabled]="editando()">
+          Desbloquea el recuerdo
+        </ion-button>
       </ion-card-content>
     </ion-card>
   </div>
 </ion-content>
+
+<ion-modal [isOpen]="recuerdoAbierto()" (didDismiss)="recuerdoAbierto.set(false)" aria-label="Tu recuerdo DrinkLimit">
+  <ng-template>
+    <app-recuerdo-modal [datos]="datosRecuerdo" (cerrado)="recuerdoAbierto.set(false)"></app-recuerdo-modal>
+  </ng-template>
+</ion-modal>

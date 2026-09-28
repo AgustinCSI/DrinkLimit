@@ -1,0 +1,41 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+ion-toolbar, ion-content, ion-footer {
+  --background: var(--drinklimit-fondo);
+  --color: var(--drinklimit-texto);
+  background: var(--drinklimit-fondo);
+  color: var(--drinklimit-texto);
+}
+
+.contenido {
+  padding: 16px;
+}
+
+img {
+  display: block;
+  width: 100%;
+  border-radius: 20px;
+}
+
+.resumen {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.acciones {
+  padding: 8px 16px;
+}
+
+.acciones ion-button {
+  width: 100%;
+  min-height: 48px;
+  margin: 0;
+  --background: var(--drinklimit-rojo);
+  --color: #fff;
+  --border-radius: 12px;
+  text-transform: none;
+}
