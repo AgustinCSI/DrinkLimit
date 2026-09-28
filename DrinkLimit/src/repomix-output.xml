@@ -1,0 +1,2540 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+app/
+  components/
+    encabezado/
+      encabezado.component.html
+      encabezado.component.scss
+      encabezado.component.ts
+    selector-modal/
+      selector-modal.component.html
+      selector-modal.component.scss
+      selector-modal.component.spec.ts
+      selector-modal.component.ts
+  guards/
+    auth.guard.ts
+    profile.guard.ts
+  login/
+    login.page.html
+    login.page.ts
+  models/
+    consumo.model.ts
+    perfil-local.model.ts
+    sesion-finalizada.model.ts
+  services/
+    auth.service.ts
+    drinking_sessions.service.ts
+    fotos.service.ts
+    historial-local.service.spec.ts
+    historial-local.service.ts
+    perfil-local.service.spec.ts
+    perfil-local.service.ts
+    supabase.client.ts
+    users.service.ts
+  tab1/
+    tab1.page.html
+    tab1.page.scss
+    tab1.page.spec.ts
+    tab1.page.ts
+  tab2/
+    tab2.page.html
+    tab2.page.scss
+    tab2.page.spec.ts
+    tab2.page.ts
+  tab3/
+    tab3.page.html
+    tab3.page.scss
+    tab3.page.spec.ts
+    tab3.page.ts
+  tabs/
+    tabs.page.html
+    tabs.page.scss
+    tabs.page.spec.ts
+    tabs.page.ts
+    tabs.routes.ts
+  app.component.html
+  app.component.scss
+  app.component.spec.ts
+  app.component.ts
+  app.routes.ts
+assets/
+  icon/
+    DrinkLimitLogo.png
+  images/
+    cerveza-agregar.png
+    cerveza-restar.png
+    inicio-bebidas.png
+  shapes.svg
+environments/
+  environment.prod.ts
+  environment.ts
+theme/
+  variables.scss
+global.scss
+index.html
+main.ts
+test-setup.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="app/components/encabezado/encabezado.component.html">
+<ion-toolbar>
+  <img
+    slot="start"
+    class="logo"
+    src="assets/icon/DrinkLimitLogo.png"
+    alt="DrinkLimit"
+    width="56"
+    height="56"
+  />
+  <ion-title>{{ titulo }}</ion-title>
+</ion-toolbar>
+</file>
+
+<file path="app/components/encabezado/encabezado.component.scss">
+:host {
+  display: block;
+}
+
+ion-toolbar {
+  --background: var(--drinklimit-fondo);
+  --color: var(--drinklimit-texto);
+  --min-height: 80px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  border-bottom: 1px solid var(--drinklimit-borde);
+}
+
+.logo {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+ion-title {
+  position: static;
+  padding-inline: 16px;
+  font-size: 28px;
+  font-weight: 500;
+  text-align: start;
+}
+</file>
+
+<file path="app/components/encabezado/encabezado.component.ts">
+import { Component, Input } from '@angular/core';
+import { IonToolbar, IonTitle } from '@ionic/angular';
+
+@Component({
+  selector: 'app-encabezado',
+  templateUrl: './encabezado.component.html',
+  styleUrls: ['./encabezado.component.scss'],
+  imports: [IonToolbar, IonTitle],
+})
+export class EncabezadoComponent {
+  @Input() titulo = 'DrinkLimit';
+}
+</file>
+
+<file path="app/components/selector-modal/selector-modal.component.html">
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>{{ titulo }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <p class="descripcion">{{ descripcion }}</p>
+
+  <ion-radio-group [(ngModel)]="seleccion" [attr.aria-label]="titulo">
+    <ion-list lines="full">
+      @for (opcion of opciones; track opcion.valor) {
+        <ion-item>
+          <ion-radio [value]="opcion.valor" justify="space-between">
+            {{ opcion.etiqueta }}
+          </ion-radio>
+        </ion-item>
+      }
+    </ion-list>
+  </ion-radio-group>
+
+  @if (opcionSeleccionada?.detalle) {
+    <p class="detalle" aria-live="polite">{{ opcionSeleccionada.detalle }}</p>
+  }
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar>
+    <div class="acciones">
+      <ion-button fill="outline" type="button" (click)="cancelado.emit()">
+        Cancelar
+      </ion-button>
+      <ion-button type="button" [disabled]="!opcionSeleccionada" (click)="confirmar()">
+        Confirmar
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
+</file>
+
+<file path="app/components/selector-modal/selector-modal.component.scss">
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  --ion-background-color: var(--drinklimit-fondo);
+  --ion-text-color: var(--drinklimit-texto);
+}
+
+ion-toolbar {
+  --background: var(--drinklimit-fondo);
+  --color: var(--drinklimit-texto);
+}
+
+.descripcion {
+  margin-top: 0;
+  line-height: 1.5;
+}
+
+ion-radio {
+  width: 100%;
+  min-height: 48px;
+  --color-checked: var(--drinklimit-rojo);
+}
+
+.detalle {
+  font-weight: 700;
+  text-align: center;
+}
+
+.acciones {
+  display: flex;
+  gap: 12px;
+  padding: 8px 16px;
+}
+
+ion-button {
+  flex: 1;
+  min-height: 44px;
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 12px;
+  text-transform: none;
+}
+
+ion-button[fill='outline'] {
+  --background: transparent;
+  --color: var(--drinklimit-rojo);
+  --border-color: var(--drinklimit-rojo);
+}
+</file>
+
+<file path="app/components/selector-modal/selector-modal.component.spec.ts">
+import { SelectorModalComponent } from './selector-modal.component';
+
+describe('SelectorModalComponent', () => {
+  it('solo comunica la selección al confirmar y funciona con marcas de cerveza', () => {
+    const selector = new SelectorModalComponent();
+    selector.opciones = [
+      { valor: 'corona', etiqueta: 'Corona' },
+      { valor: 'austral', etiqueta: 'Austral' },
+    ];
+    selector.valorInicial = 'corona';
+    selector.ngOnInit();
+    const confirmar = vi.fn();
+    selector.confirmado.subscribe(confirmar);
+
+    selector.seleccion.set('austral');
+    expect(confirmar).not.toHaveBeenCalled();
+    selector.confirmar();
+    expect(confirmar).toHaveBeenCalledWith('austral');
+  });
+
+  it('no confirma una opción inexistente', () => {
+    const selector = new SelectorModalComponent();
+    selector.opciones = [{ valor: '1', etiqueta: '1 ventana' }];
+    const confirmar = vi.fn();
+    selector.confirmado.subscribe(confirmar);
+    selector.seleccion.set('7');
+    selector.confirmar();
+    expect(confirmar).not.toHaveBeenCalled();
+  });
+});
+</file>
+
+<file path="app/components/selector-modal/selector-modal.component.ts">
+import { Component, EventEmitter, Input, OnInit, Output, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import {
+  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem,
+  IonRadioGroup, IonRadio, IonFooter, IonButton,
+} from '@ionic/angular';
+
+export interface OpcionSelector {
+  valor: string;
+  etiqueta: string;
+  detalle?: string;
+}
+
+@Component({
+  selector: 'app-selector-modal',
+  templateUrl: './selector-modal.component.html',
+  styleUrls: ['./selector-modal.component.scss'],
+  imports: [
+    FormsModule, IonHeader, IonToolbar, IonTitle, IonContent, IonList,
+    IonItem, IonRadioGroup, IonRadio, IonFooter, IonButton,
+  ],
+})
+export class SelectorModalComponent implements OnInit {
+  @Input() titulo = 'Seleccionar';
+  @Input() descripcion = '';
+  @Input() opciones: OpcionSelector[] = [];
+  @Input() valorInicial = '';
+
+  @Output() confirmado = new EventEmitter<string>();
+  @Output() cancelado = new EventEmitter<void>();
+
+  seleccion = signal('');
+
+  ngOnInit() {
+    this.seleccion.set(this.valorInicial);
+  }
+
+  get opcionSeleccionada(): OpcionSelector | undefined {
+    return this.opciones.find((opcion) => opcion.valor === this.seleccion());
+  }
+
+  confirmar() {
+    const opcion = this.opcionSeleccionada;
+    if (opcion) {
+      this.confirmado.emit(opcion.valor);
+    }
+  }
+}
+</file>
+
+<file path="app/guards/auth.guard.ts">
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
+import { AuthService } from "../services/auth.service";
+
+// Si no hay sesión, manda a /login.
+export const authGuard: CanActivateFn = async () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+  const sesion = await auth.sesion();
+  return sesion ? true : router.createUrlTree(["/login"]);
+};
+</file>
+
+<file path="app/guards/profile.guard.ts">
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
+import { AuthService } from "../services/auth.service";
+import { UsersService } from "../services/users.service";
+
+// Si hay sesión pero no hay fila en `users`, manda a /profile.
+export const profileGuard: CanActivateFn = async () => {
+  const auth = inject(AuthService);
+  const users = inject(UsersService);
+  const router = inject(Router);
+
+  const usuario = await auth.usuario();
+  if (!usuario) return true; // authGuard se encarga de este caso
+
+  const perfil = await users.obtener(usuario.id);
+  return perfil ? true : router.createUrlTree(["/profile"]);
+};
+</file>
+
+<file path="app/login/login.page.html">
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Entrar 🔐</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="modo" (ngModelChange)="limpiarMensajes()">
+    <ion-segment-button value="entrar"><ion-label>Entrar</ion-label></ion-segment-button>
+    <ion-segment-button value="crear"><ion-label>Crear cuenta</ion-label></ion-segment-button>
+  </ion-segment>
+
+  <form [formGroup]="form" (ngSubmit)="enviar()">
+    <ion-list>
+      <ion-item>
+        <ion-input
+          label="Correo" labelPlacement="stacked" type="email"
+          placeholder="tu@correo.com" formControlName="email"
+        ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-input
+          label="Contraseña" labelPlacement="stacked" type="password"
+          placeholder="mínimo 6 caracteres" formControlName="password"
+        ></ion-input>
+      </ion-item>
+    </ion-list>
+
+    @if (error()) {
+      <ion-text color="danger"><p class="ion-padding-start">{{ error() }}</p></ion-text>
+    }
+
+    @if (aviso()) {
+      <ion-text color="success"><p class="ion-padding-start">{{ aviso() }}</p></ion-text>
+    }
+
+    <ion-button expand="block" type="submit" class="ion-margin-top" [disabled]="cargando()">
+      @if (cargando()) {
+        <ion-spinner name="dots"></ion-spinner>
+      } @else {
+        {{ modo() === "crear" ? "Crear cuenta" : "Entrar" }}
+      }
+    </ion-button>
+  </form>
+</ion-content>
+</file>
+
+<file path="app/login/login.page.ts">
+import { Component, inject, signal } from "@angular/core";
+import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from "@angular/forms";
+import { Router } from "@angular/router";
+import {
+  IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput,
+  IonButton, IonSegment, IonSegmentButton, IonLabel, IonText, IonSpinner,
+} from "@ionic/angular";
+import { AuthService } from "../services/auth.service";
+
+@Component({
+  selector: "app-login",
+  templateUrl: "login.page.html",
+  standalone: true,
+  imports: [
+    FormsModule, ReactiveFormsModule,
+    IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonItem, IonInput,
+    IonButton, IonSegment, IonSegmentButton, IonLabel, IonText, IonSpinner,
+  ],
+})
+export class LoginPage {
+  private auth = inject(AuthService);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
+
+  // Lo que se ve en pantalla va en signals: cuando cambian, Angular sabe qué
+  // redibujar, aunque el cambio llegue después de un await.
+  modo = signal<"entrar" | "crear">("entrar");
+  cargando = signal(false);
+  error = signal("");
+  aviso = signal("");
+
+  form = this.fb.nonNullable.group({
+    email: ["", [Validators.required, Validators.email]],
+    password: ["", [Validators.required, Validators.minLength(6)]],
+  });
+
+  limpiarMensajes() {
+    this.error.set("");
+    this.aviso.set("");
+  }
+
+  async enviar() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.cargando.set(true);
+    this.limpiarMensajes();
+    const { email, password } = this.form.getRawValue();
+    try {
+      if (this.modo() === "crear") {
+        const resultado = await this.auth.registrarse(email, password);
+
+        if (resultado === "ya-existe") {
+          this.modo.set("entrar");
+          this.error.set("Ese correo ya tiene cuenta. Entra con tu contraseña.");
+          return;
+        }
+        if (resultado === "confirmar-correo") {
+          this.modo.set("entrar");
+          this.aviso.set(`Cuenta creada. Te enviamos un correo a ${email}: ábrelo para confirmarla y después entra.`);
+          return;
+        }
+      } else {
+        await this.auth.ingresar(email, password);
+      }
+      this.router.navigateByUrl("/profile", { replaceUrl: true });
+    } catch (e: unknown) {
+      this.error.set((e as { message?: string })?.message ?? "No se pudo completar la operación.");
+    } finally {
+      this.cargando.set(false);
+    }
+  }
+}
+</file>
+
+<file path="app/models/consumo.model.ts">
+export interface Consumo {
+  marca: string;
+  fecha: string;
+}
+</file>
+
+<file path="app/models/perfil-local.model.ts">
+export type Sexo = 'M' | 'F' | 'Otro';
+
+export interface PerfilLocal {
+  first_name: string;
+  last_name: string;
+  birth_date: string;
+  gender: Sexo;
+  foto: string | null;
+}
+
+export type DatosPerfilEditables = Pick<PerfilLocal, 'first_name' | 'last_name' | 'gender' | 'foto'>;
+</file>
+
+<file path="app/models/sesion-finalizada.model.ts">
+import { Consumo } from './consumo.model';
+
+export type MotivoCierre = 'tiempo' | 'embriaguez';
+
+export interface SesionFinalizada {
+  id: number;
+  inicio: string;
+  fin: string;
+  ventanas: number;
+  motivoCierre: MotivoCierre;
+  consumos: Consumo[];
+}
+</file>
+
+<file path="app/services/auth.service.ts">
+import { Injectable } from "@angular/core";
+import { Session, User } from "@supabase/supabase-js";
+import { supabase } from "./supabase.client";
+
+// Qué pasó al crear la cuenta: quedó la sesión abierta, falta confirmar el
+// correo, o ese correo ya tenía cuenta.
+export type ResultadoRegistro = "sesion-iniciada" | "confirmar-correo" | "ya-existe";
+
+@Injectable({ providedIn: "root" })
+export class AuthService {
+  // Crear una cuenta nueva (email + contraseña).
+  async registrarse(email: string, password: string): Promise<ResultadoRegistro> {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+
+    if (data.user && data.user.identities?.length === 0) return "ya-existe";
+
+    return data.session ? "sesion-iniciada" : "confirmar-correo";
+  }
+
+  // Iniciar sesión con una cuenta existente.
+  async ingresar(email: string, password: string) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+  }
+
+  // Cerrar sesión.
+  async salir() {
+    await supabase.auth.signOut();
+  }
+
+  // La sesión actual (o null si no hay).
+  async sesion(): Promise<Session | null> {
+    const { data } = await supabase.auth.getSession();
+    return data.session;
+  }
+
+  // El usuario logueado (o null).
+  async usuario(): Promise<User | null> {
+    const { data } = await supabase.auth.getUser();
+    return data.user;
+  }
+}
+</file>
+
+<file path="app/services/drinking_sessions.service.ts">
+import { Injectable } from '@angular/core';
+import { supabase } from './supabase.client';
+
+export interface Drink {
+  id: string;
+  brand: string;
+}
+
+export interface DrinkingSession {
+  id: string;
+  start_time: string;
+  end_time: string | null;
+  user_id: string;
+}
+
+export interface SessionDrink {
+  drinking_session_id: string;
+  drunk_on: string;
+  drink_id: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class SessionsService {
+
+  // Catálogo de tragos disponibles.
+  async listaDrinks(): Promise<Drink[]> {
+    const { data, error } = await supabase
+      .from('drinks')
+      .select('*')
+      .order('brand');
+    if (error) throw error;
+    return (data ?? []) as Drink[];
+  }
+
+  // La sesión abierta del usuario, si tiene una (end_time nulo = en curso).
+  async sesionActiva(userId: string): Promise<DrinkingSession | undefined> {
+    const { data, error } = await supabase
+      .from('drinking_sessions')
+      .select('*')
+      .eq('user_id', userId)
+      .is('end_time', null)
+      .maybeSingle();
+    if (error) throw error;
+    return (data ?? undefined) as DrinkingSession | undefined;
+  }
+
+  // Empieza una sesión nueva y devuelve la fila creada (para tener su id).
+  async iniciarSesion(userId: string): Promise<DrinkingSession> {
+    const { data, error } = await supabase
+      .from('drinking_sessions')
+      .insert({
+        user_id: userId,
+        start_time: new Date().toISOString(),
+        end_time: null,
+      })
+      .select()
+      .single();
+    if (error) throw error;
+    return data as DrinkingSession;
+  }
+
+  // Cierra la sesión.
+  async terminarSesion(sessionId: string): Promise<void> {
+    const { error } = await supabase
+      .from('drinking_sessions')
+      .update({ end_time: new Date().toISOString() })
+      .eq('id', sessionId);
+    if (error) throw error;
+  }
+
+  // Historial: sesiones ya terminadas, más recientes primero.
+  async historial(userId: string): Promise<DrinkingSession[]> {
+    const { data, error } = await supabase
+      .from('drinking_sessions')
+      .select('*')
+      .eq('user_id', userId)
+      .not('end_time', 'is', null)
+      .order('start_time', { ascending: false });
+    if (error) throw error;
+    return (data ?? []) as DrinkingSession[];
+  }
+
+  // +1: registra un trago tomado en la sesión (cada tap = una fila).
+  async agregarTrago(sessionId: string, drinkId: string): Promise<void> {
+    const { error } = await supabase
+      .from('session_drinks')
+      .insert({
+        drinking_session_id: sessionId,
+        drink_id: drinkId,
+        drunk_on: new Date().toISOString(),
+      });
+    if (error) throw error;
+  }
+
+  // -1: borra el registro más reciente de ese trago en la sesión.
+  async quitarTrago(sessionId: string, drinkId: string): Promise<void> {
+    const { data, error } = await supabase
+      .from('session_drinks')
+      .select('drinking_session_id, drunk_on')
+      .eq('drinking_session_id', sessionId)
+      .eq('drink_id', drinkId)
+      .order('drunk_on', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+    if (!data) return; // no hay nada que quitar
+
+    const { error: delError } = await supabase
+      .from('session_drinks')
+      .delete()
+      .eq('drinking_session_id', data.drinking_session_id)
+      .eq('drunk_on', data.drunk_on);
+    if (delError) throw delError;
+  }
+
+  // Todos los tragos registrados en una sesión, con el nombre del trago incluido.
+  async tragosDeSesion(sessionId: string): Promise<(SessionDrink & { drinks: Drink })[]> {
+    const { data, error } = await supabase
+      .from('session_drinks')
+      .select('*, drinks(*)')
+      .eq('drinking_session_id', sessionId)
+      .order('drunk_on');
+    if (error) throw error;
+    return (data ?? []) as (SessionDrink & { drinks: Drink })[];
+  }
+
+  // Cuántas veces se registró cada trago en una sesión (para pintar los contadores al abrir/reabrir).
+  async conteoPorDrink(sessionId: string): Promise<Record<string, number>> {
+    const { data, error } = await supabase
+      .from('session_drinks')
+      .select('drink_id')
+      .eq('drinking_session_id', sessionId);
+    if (error) throw error;
+
+    const conteo: Record<string, number> = {};
+    for (const fila of data ?? []) {
+      conteo[fila.drink_id] = (conteo[fila.drink_id] ?? 0) + 1;
+    }
+    return conteo;
+  }
+}
+</file>
+
+<file path="app/services/fotos.service.ts">
+import { Injectable } from '@angular/core';
+import { supabase } from './supabase.client';
+
+@Injectable({ providedIn: 'root' })
+export class FotosService {
+  // Carga un archivo al bucket "fotos" de Supabase Storage y devuelve su URL pública.
+  async cargar(archivo: File): Promise<string> {
+    const extension = archivo.name.split('.').pop() ?? 'jpg';
+    const ruta = `${crypto.randomUUID()}.${extension}`;
+
+    const { error } = await supabase.storage.from('fotos').upload(ruta, archivo);
+    if (error) throw error;
+
+    const { data } = supabase.storage.from('fotos').getPublicUrl(ruta);
+    return data.publicUrl;
+  }
+}
+</file>
+
+<file path="app/services/historial-local.service.spec.ts">
+import { HistorialLocalService } from './historial-local.service';
+import { SesionFinalizada } from '../models/sesion-finalizada.model';
+
+describe('HistorialLocalService', () => {
+  const crearSesion = (): Omit<SesionFinalizada, 'id'> => ({
+    inicio: '2026-09-27T18:00:00.000Z',
+    fin: '2026-09-27T19:10:00.000Z',
+    ventanas: 1,
+    motivoCierre: 'tiempo',
+    consumos: [{ marca: 'Corona', fecha: '2026-09-27T18:05:00.000Z' }],
+  });
+
+  it('conserva las sesiones anteriores y muestra la última primero con un id distinto', () => {
+    const servicio = new HistorialLocalService();
+    expect(servicio.sesiones()).toEqual([]);
+    servicio.guardar(crearSesion());
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez' });
+    expect(servicio.sesiones().map((sesion) => sesion.motivoCierre)).toEqual(['embriaguez', 'tiempo']);
+    expect(new Set(servicio.sesiones().map((sesion) => sesion.id)).size).toBe(2);
+  });
+
+  it('los cambios en el consumo original no alteran una sesión guardada', () => {
+    const servicio = new HistorialLocalService();
+    const datos = crearSesion();
+    servicio.guardar(datos);
+    datos.consumos[0]!.marca = 'Austral';
+    datos.consumos.push({ marca: 'Becker', fecha: datos.fin });
+    expect(servicio.sesiones()[0]!.consumos).toEqual([
+      { marca: 'Corona', fecha: '2026-09-27T18:05:00.000Z' },
+    ]);
+  });
+  it('distingue el máximo general del máximo por embriaguez y actualiza los indicadores', () => {
+    const servicio = new HistorialLocalService();
+    expect(servicio.vecesCurado()).toBe(0);
+    expect(servicio.topeTragos()).toBeNull();
+    expect(servicio.limitePersonal()).toBeNull();
+    const consumos = (cantidad: number) => Array.from({ length: cantidad }, () => crearSesion().consumos[0]!);
+    servicio.guardar({ ...crearSesion(), consumos: consumos(12) });
+    expect(servicio.topeTragos()).toBe(12);
+    expect(servicio.limitePersonal()).toBeNull();
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez', consumos: consumos(10) });
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez', consumos: consumos(5) });
+    expect(servicio.vecesCurado()).toBe(2);
+    expect(servicio.topeTragos()).toBe(12);
+    expect(servicio.limitePersonal()).toBe(10);
+  });
+
+  it('distingue cero consumos de la ausencia de datos', () => {
+    const servicio = new HistorialLocalService();
+    servicio.guardar({ ...crearSesion(), motivoCierre: 'embriaguez', consumos: [] });
+    expect(servicio.topeTragos()).toBe(0);
+    expect(servicio.limitePersonal()).toBe(0);
+  });
+
+});
+</file>
+
+<file path="app/services/historial-local.service.ts">
+import { Injectable, computed, signal } from '@angular/core';
+import { SesionFinalizada } from '../models/sesion-finalizada.model';
+
+@Injectable({ providedIn: 'root' })
+export class HistorialLocalService {
+  private registros = signal<SesionFinalizada[]>([]);
+  private siguienteId = 1;
+
+  sesiones = this.registros.asReadonly();
+
+  vecesCurado = computed(() => this.registros().filter((sesion) => sesion.motivoCierre === 'embriaguez').length);
+
+  topeTragos = computed(() => {
+    const sesiones = this.registros();
+    return sesiones.length === 0 ? null : Math.max(...sesiones.map((sesion) => sesion.consumos.length));
+  });
+
+  limitePersonal = computed(() => {
+    const sesiones = this.registros().filter((sesion) => sesion.motivoCierre === 'embriaguez');
+    return sesiones.length === 0 ? null : Math.max(...sesiones.map((sesion) => sesion.consumos.length));
+  });
+
+  guardar(datos: Omit<SesionFinalizada, 'id'>) {
+    const sesion: SesionFinalizada = {
+      ...datos,
+      id: this.siguienteId++,
+      // Copiamos los consumos para independizar el historial de la sesión de Inicio.
+      consumos: datos.consumos.map((consumo) => ({ ...consumo })),
+    };
+    this.registros.update((actuales) => [sesion, ...actuales]);
+  }
+}
+</file>
+
+<file path="app/services/perfil-local.service.spec.ts">
+import { PerfilLocalService } from './perfil-local.service';
+
+describe('PerfilLocalService', () => {
+  it('guarda los datos editables sin permitir cambiar la fecha de nacimiento', () => {
+    const servicio = new PerfilLocalService();
+    const nacimiento = servicio.perfil().birth_date;
+    const cambios = {
+      first_name: ' Ana ', last_name: ' Pérez ', gender: 'F' as const,
+      foto: 'data:image/png;base64,ejemplo', birth_date: '2000-01-01',
+    };
+    servicio.guardar(cambios);
+    expect(servicio.perfil()).toEqual({
+      first_name: 'Ana', last_name: 'Pérez', gender: 'F', foto: cambios.foto, birth_date: nacimiento,
+    });
+  });
+
+  it('rechaza nombres vacíos sin modificar el perfil', () => {
+    const servicio = new PerfilLocalService();
+    const original = servicio.perfil();
+    expect(() => servicio.guardar({ ...original, first_name: '  ' })).toThrow('Completa');
+    expect(servicio.perfil()).toBe(original);
+  });
+});
+</file>
+
+<file path="app/services/perfil-local.service.ts">
+import { Injectable, signal } from '@angular/core';
+import { DatosPerfilEditables, PerfilLocal } from '../models/perfil-local.model';
+
+@Injectable({ providedIn: 'root' })
+export class PerfilLocalService {
+  private datos = signal<PerfilLocal>({
+    first_name: 'Martín',
+    last_name: 'Ejemplo',
+    birth_date: '2005-05-14',
+    gender: 'M',
+    foto: null,
+  });
+
+  perfil = this.datos.asReadonly();
+
+  guardar(cambios: DatosPerfilEditables) {
+    const nombre = cambios.first_name.trim();
+    const apellido = cambios.last_name.trim();
+    if (!nombre || !apellido) throw new Error('Completa el nombre y el apellido.');
+    if (!['M', 'F', 'Otro'].includes(cambios.gender)) throw new Error('Selecciona un sexo válido.');
+
+    // Solo copiamos los campos editables: birth_date permanece intacta.
+    this.datos.update((actuales) => ({
+      ...actuales,
+      first_name: nombre,
+      last_name: apellido,
+      gender: cambios.gender,
+      foto: cambios.foto,
+    }));
+  }
+}
+</file>
+
+<file path="app/services/supabase.client.ts">
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../environments/environment';
+
+// Un único cliente de Supabase para toda la app.
+export const supabase: SupabaseClient = createClient(
+  environment.supabaseUrl,
+  environment.supabaseAnonKey,
+);
+</file>
+
+<file path="app/services/users.service.ts">
+import { Injectable } from '@angular/core';
+import { supabase } from './supabase.client';
+
+export interface AppUser {
+  id: string;
+  first_name: string;
+  last_name: string;
+  birth_date: string;
+  gender: string;
+  username: string;
+  weight: number | null;
+}
+
+// Lo que se puede editar desde el perfil: todo menos el id (ese lo pone Supabase Auth).
+export type PerfilEditable = Omit<AppUser, 'id'>;
+
+@Injectable({ providedIn: 'root' })
+export class UsersService {
+
+  // Trae el perfil de un usuario por su id.
+  async obtener(id: string): Promise<AppUser | undefined> {
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    return (data ?? undefined) as AppUser | undefined;
+  }
+
+  // Crea o actualiza el perfil del usuario logueado (upsert = "si existe, actualiza; si no, crea").
+  async guardarPerfil(id: string, datos: PerfilEditable): Promise<void> {
+    const { error } = await supabase
+      .from('users')
+      .upsert({ id, ...datos });
+    if (error) throw error;
+  }
+}
+</file>
+
+<file path="app/tab1/tab1.page.html">
+<ion-header class="ion-no-border">
+  <app-encabezado titulo="Inicio"></app-encabezado>
+</ion-header>
+
+<ion-content>
+  <div class="inicio" [class.con-sesion]="ventanasSeleccionadas() !== null">
+    <img
+      class="ilustracion"
+      src="assets/images/inicio-bebidas.png"
+      alt="Ilustración de bebidas y una jarra de cerveza tocando un acordeón"
+      width="730"
+      height="1000"
+    />
+
+    <div class="configuracion">
+      @if (ventanasSeleccionadas() !== null) {
+        <p class="resumen">
+          Ventanas: {{ ventanasSeleccionadas() }} · Duración: {{ duracionSeleccionada() }}
+        </p>
+        <p class="temporizador" role="timer" aria-label="Tiempo restante">
+          {{ tiempoRestante() }}
+        </p>
+
+        <div class="contador">
+          <ion-button
+            class="control-consumo" type="button" aria-label="Restar la última cerveza"
+            [disabled]="!sesionActiva() || cantidadCervezas() === 0"
+            (click)="restarCerveza()"
+          >
+            <img src="assets/images/cerveza-restar.png" alt="" width="188" height="276" />
+            <span class="simbolo" aria-hidden="true">−</span>
+          </ion-button>
+
+          <div class="cantidad" role="status" aria-live="polite" aria-atomic="true">
+            <strong>{{ cantidadCervezas() }}</strong>
+            <span>{{ cantidadCervezas() === 1 ? 'cerveza' : 'cervezas' }}</span>
+          </div>
+
+          <ion-button
+            class="control-consumo" type="button" aria-label="Añadir una cerveza"
+            [disabled]="!sesionActiva()" (click)="abrirSelectorCerveza()"
+          >
+            <img src="assets/images/cerveza-agregar.png" alt="" width="188" height="276" />
+            <span class="simbolo" aria-hidden="true">+</span>
+          </ion-button>
+        </div>
+
+        @if (ultimaCerveza()) {
+          <p class="resumen">Última registrada: {{ ultimaCerveza() }}</p>
+        }
+
+        @if (sesionActiva()) {
+          <ion-button class="boton-detener" type="button" (click)="detenerPorEmbriaguez()">
+            Detener: estoy borracho
+          </ion-button>
+        }
+      }
+
+      @if (tiempoAgotado()) {
+        <p class="resumen" role="status">Ventana terminada. Se agotó el tiempo.</p>
+      }
+
+      @if (motivoCierre() === 'embriaguez') {
+        <p class="resumen" role="status">Sesión detenida por embriaguez declarada.</p>
+      }
+
+      @if (!sesionActiva()) {
+        <ion-button class="boton-iniciar" type="button" (click)="abrirSelector()">
+          Iniciar Ventana
+        </ion-button>
+      }
+    </div>
+  </div>
+</ion-content>
+
+<ion-modal
+  [isOpen]="selectorAbierto()"
+  (didDismiss)="cerrarSelector()"
+  aria-label="Seleccionar ventanas"
+>
+  <ng-template>
+    <app-selector-modal
+      titulo="Seleccionar tipo de ventana"
+      descripcion="Cada ventana dura 1 hora y 10 minutos. Elige cuántas tienes seguidas."
+      [opciones]="opcionesVentanas"
+      [valorInicial]="(ventanasSeleccionadas() ?? 1).toString()"
+      (confirmado)="confirmarVentanas($event)"
+      (cancelado)="cerrarSelector()"
+    ></app-selector-modal>
+  </ng-template>
+</ion-modal>
+
+<ion-modal
+  [isOpen]="selectorCervezaAbierto()"
+  (didDismiss)="cerrarSelectorCerveza()"
+  aria-label="Seleccionar cerveza"
+>
+  <ng-template>
+    <app-selector-modal
+      titulo="Seleccionar cerveza"
+      descripcion="Elige la cerveza que estás tomando. Confirmar registra una unidad."
+      [opciones]="opcionesCervezas"
+      (confirmado)="confirmarCerveza($event)"
+      (cancelado)="cerrarSelectorCerveza()"
+    ></app-selector-modal>
+  </ng-template>
+</ion-modal>
+</file>
+
+<file path="app/tab1/tab1.page.scss">
+.inicio {
+  box-sizing: border-box;
+  min-height: 100%;
+  max-width: 560px;
+  margin-inline: auto;
+  padding: 24px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.ilustracion {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+.configuracion {
+  width: 100%;
+  text-align: center;
+}
+
+.inicio.con-sesion {
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+.con-sesion .ilustracion {
+  max-width: 230px;
+}
+
+.contador {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  max-width: 320px;
+  margin-inline: auto;
+  padding: 8px;
+  border-radius: 20px;
+  background: var(--drinklimit-rojo);
+}
+
+.control-consumo {
+  flex: 1;
+  margin: 0;
+  height: 104px;
+  --background: transparent;
+  --box-shadow: none;
+  --padding-start: 4px;
+  --padding-end: 4px;
+}
+
+.control-consumo img {
+  width: 62px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.simbolo {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--drinklimit-fondo);
+  color: var(--drinklimit-texto);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.cantidad {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 80px;
+  border: 3px solid #ffb800;
+  background: var(--drinklimit-fondo);
+  color: var(--drinklimit-texto);
+}
+
+.cantidad strong {
+  font-size: 40px;
+}
+
+.cantidad span {
+  font-size: 13px;
+}
+
+.boton-detener {
+  margin-top: 16px;
+  min-height: 48px;
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 24px;
+  text-transform: none;
+}
+
+.resumen {
+  line-height: 1.5;
+}
+
+.temporizador {
+  margin: 12px 0;
+  color: var(--drinklimit-texto);
+  font-size: clamp(32px, 8vw, 44px);
+  font-variant-numeric: tabular-nums;
+}
+
+ion-modal {
+  --width: min(92%, 440px);
+  --height: min(90%, 620px);
+  --border-radius: 20px;
+}
+
+.boton-iniciar {
+  --background: var(--drinklimit-rojo);
+  --background-hover: var(--drinklimit-rojo-oscuro);
+  --background-activated: var(--drinklimit-rojo-oscuro);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 16px;
+  --box-shadow: none;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  min-height: 54px;
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  text-transform: none;
+}
+</file>
+
+<file path="app/tab1/tab1.page.spec.ts">
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Tab1Page } from './tab1.page';
+import { HistorialLocalService } from '../services/historial-local.service';
+
+describe('Tab1Page', () => {
+  let component: Tab1Page;
+  let fixture: ComponentFixture<Tab1Page>;
+
+  beforeEach(async () => {
+    vi.useFakeTimers({ toFake: ['Date', 'setInterval', 'clearInterval'] });
+    fixture = TestBed.createComponent(Tab1Page);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+    vi.useRealTimers();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it.each([
+    ['1', '01:10:00'], ['2', '02:20:00'], ['3', '03:30:00'],
+    ['4', '04:40:00'], ['5', '05:50:00'], ['6', '07:00:00'],
+  ])('calcula la duración de %s ventanas', (cantidad, duracion) => {
+    component.abrirSelector();
+    component.confirmarVentanas(cantidad);
+    expect(component.duracionSeleccionada()).toBe(duracion);
+    expect(component.selectorAbierto()).toBe(false);
+  });
+
+  it('cancelar no inicia una sesión ni crea un temporizador', () => {
+    component.abrirSelector();
+    component.cerrarSelector();
+    expect(component.ventanasSeleccionadas()).toBeNull();
+    expect(component.sesionActiva()).toBe(false);
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('rechaza cantidades fuera de las seis opciones', () => {
+    for (const valor of ['0', '7', '2.5', 'Corona']) {
+      component.confirmarVentanas(valor);
+      expect(component.ventanasSeleccionadas()).toBeNull();
+    }
+  });
+
+  it('cuenta hacia atrás desde la duración confirmada', () => {
+    component.confirmarVentanas('1');
+    expect(component.tiempoRestante()).toBe('01:10:00');
+    vi.advanceTimersByTime(1000);
+    expect(component.tiempoRestante()).toBe('01:09:59');
+    expect(component.sesionActiva()).toBe(true);
+  });
+
+  it('no permite reiniciar ni duplicar un temporizador activo', () => {
+    component.confirmarVentanas('1');
+    vi.advanceTimersByTime(1000);
+    component.abrirSelector();
+    component.confirmarVentanas('6');
+    expect(component.selectorAbierto()).toBe(false);
+    expect(component.ventanasSeleccionadas()).toBe(1);
+    expect(component.tiempoRestante()).toBe('01:09:59');
+    expect(vi.getTimerCount()).toBe(1);
+  });
+
+  it('recupera el tiempo transcurrido al volver a Inicio sin esperar cada tick', () => {
+    component.confirmarVentanas('1');
+    vi.setSystemTime(Date.now() + 10 * 60 * 1000);
+    component.ionViewWillEnter();
+    expect(component.tiempoRestante()).toBe('01:00:00');
+  });
+
+  it('finaliza a cero, limpia el intervalo y permite una nueva sesión', () => {
+    component.confirmarVentanas('1');
+    vi.setSystemTime(Date.now() + 71 * 60 * 1000);
+    document.dispatchEvent(new Event('visibilitychange'));
+    expect(component.tiempoRestante()).toBe('00:00:00');
+    expect(component.sesionActiva()).toBe(false);
+    expect(component.tiempoAgotado()).toBe(true);
+    expect(vi.getTimerCount()).toBe(0);
+
+    component.confirmarVentanas('2');
+    expect(component.tiempoRestante()).toBe('02:20:00');
+    expect(component.tiempoAgotado()).toBe(false);
+    expect(component.sesionActiva()).toBe(true);
+  });
+
+  it('libera el intervalo al destruir la página', () => {
+    component.confirmarVentanas('1');
+    component.ngOnDestroy();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it.each(['Corona', 'Austral', 'Becker', 'Patagonia', 'Cusqueña'])(
+    'registra una cerveza %s con fecha solo al confirmar', (marca) => {
+      component.confirmarVentanas('1');
+      component.abrirSelectorCerveza();
+      expect(component.cantidadCervezas()).toBe(0);
+      component.confirmarCerveza(marca);
+      expect(component.consumos()).toEqual([{ marca, fecha: new Date().toISOString() }]);
+      expect(component.cantidadCervezas()).toBe(1);
+      expect(component.selectorCervezaAbierto()).toBe(false);
+      component.confirmarCerveza(marca);
+      expect(component.cantidadCervezas()).toBe(1);
+    },
+  );
+
+  it('cancelar o confirmar una marca inexistente no suma', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Otra');
+    expect(component.cantidadCervezas()).toBe(0);
+    component.cerrarSelectorCerveza();
+    expect(component.cantidadCervezas()).toBe(0);
+  });
+
+  it('resta el último registro, conserva los anteriores y nunca baja de cero', () => {
+    component.confirmarVentanas('1');
+    for (const marca of ['Corona', 'Austral']) {
+      component.abrirSelectorCerveza();
+      component.confirmarCerveza(marca);
+    }
+    component.restarCerveza();
+    expect(component.cantidadCervezas()).toBe(1);
+    expect(component.ultimaCerveza()).toBe('Corona');
+    component.restarCerveza();
+    component.restarCerveza();
+    expect(component.cantidadCervezas()).toBe(0);
+  });
+
+  it('detener manualmente conserva el consumo y bloquea cambios posteriores', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Becker');
+    vi.advanceTimersByTime(1000);
+    component.detenerPorEmbriaguez();
+    expect(component.motivoCierre()).toBe('embriaguez');
+    expect(component.sesionActiva()).toBe(false);
+    expect(component.tiempoRestante()).toBe('01:09:59');
+    expect(vi.getTimerCount()).toBe(0);
+    component.restarCerveza();
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Corona');
+    expect(component.selectorCervezaAbierto()).toBe(false);
+    expect(component.cantidadCervezas()).toBe(1);
+  });
+
+  it('si vence el tiempo con el selector abierto, no admite una confirmación tardía', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    vi.setSystemTime(Date.now() + 70 * 60 * 1000);
+    component.confirmarCerveza('Corona');
+    expect(component.selectorCervezaAbierto()).toBe(false);
+    expect(component.cantidadCervezas()).toBe(0);
+    expect(component.motivoCierre()).toBe('tiempo');
+    component.detenerPorEmbriaguez();
+    expect(component.motivoCierre()).toBe('tiempo');
+  });
+
+  it('no deja restar después del vencimiento aunque el intervalo todavía no haya corrido', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Patagonia');
+    vi.setSystemTime(Date.now() + 70 * 60 * 1000);
+    component.restarCerveza();
+    expect(component.cantidadCervezas()).toBe(1);
+    expect(component.motivoCierre()).toBe('tiempo');
+  });
+
+  it('una nueva sesión comienza sin consumos ni motivo de cierre anterior', () => {
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Cusqueña');
+    component.detenerPorEmbriaguez();
+    component.confirmarVentanas('2');
+    expect(component.cantidadCervezas()).toBe(0);
+    expect(component.ultimaCerveza()).toBe('');
+    expect(component.motivoCierre()).toBeNull();
+    expect(component.tiempoRestante()).toBe('02:20:00');
+  });
+
+  it('solo guarda al finalizar y conserva la primera sesión al iniciar otra', () => {
+    const historial = TestBed.inject(HistorialLocalService);
+    const inicio = new Date().toISOString();
+    component.confirmarVentanas('1');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Corona');
+    expect(historial.sesiones()).toHaveLength(0);
+    vi.advanceTimersByTime(2000);
+    component.detenerPorEmbriaguez();
+    component.detenerPorEmbriaguez();
+    component.actualizarTiempo();
+    expect(historial.sesiones()).toHaveLength(1);
+    expect(historial.sesiones()[0]).toMatchObject({
+      inicio,
+      fin: new Date().toISOString(),
+      motivoCierre: 'embriaguez',
+      ventanas: 1,
+    });
+    component.confirmarVentanas('2');
+    component.abrirSelectorCerveza();
+    component.confirmarCerveza('Austral');
+    expect(historial.sesiones()[0]!.consumos[0]!.marca).toBe('Corona');
+    expect(historial.sesiones()).toHaveLength(1);
+  });
+
+  it('guarda el fin previsto al expirar en segundo plano, incluso con cero consumos', () => {
+    const historial = TestBed.inject(HistorialLocalService);
+    const inicio = Date.now();
+    component.confirmarVentanas('1');
+    vi.setSystemTime(inicio + 80 * 60 * 1000);
+    component.actualizarTiempo();
+    component.ionViewWillEnter();
+    expect(historial.sesiones()).toHaveLength(1);
+    expect(historial.sesiones()[0]).toMatchObject({
+      fin: new Date(inicio + 70 * 60 * 1000).toISOString(),
+      motivoCierre: 'tiempo',
+      consumos: [],
+    });
+  });
+});
+</file>
+
+<file path="app/tab1/tab1.page.ts">
+import { Component, HostListener, OnDestroy, computed, inject, signal } from '@angular/core';
+import { IonHeader, IonContent, IonButton, IonModal } from '@ionic/angular';
+import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
+import { OpcionSelector, SelectorModalComponent } from '../components/selector-modal/selector-modal.component';
+import { Consumo } from '../models/consumo.model';
+import { MotivoCierre } from '../models/sesion-finalizada.model';
+import { HistorialLocalService } from '../services/historial-local.service';
+
+@Component({
+  selector: 'app-tab1',
+  templateUrl: 'tab1.page.html',
+  styleUrls: ['tab1.page.scss'],
+  imports: [IonHeader, IonContent, IonButton, IonModal, EncabezadoComponent, SelectorModalComponent],
+})
+export class Tab1Page implements OnDestroy {
+  private historial = inject(HistorialLocalService);
+  selectorAbierto = signal(false);
+  selectorCervezaAbierto = signal(false);
+  ventanasSeleccionadas = signal<number | null>(null);
+  sesionActiva = signal(false);
+  motivoCierre = signal<MotivoCierre | null>(null);
+  tiempoAgotado = computed(() => this.motivoCierre() === 'tiempo');
+  segundosRestantes = signal(0);
+  consumos = signal<Consumo[]>([]);
+  cantidadCervezas = computed(() => this.consumos().length);
+  ultimaCerveza = computed(() => this.consumos().at(-1)?.marca ?? '');
+
+  private finVentana: number | null = null;
+  private inicioVentana: number | null = null;
+  private intervalo: ReturnType<typeof setInterval> | null = null;
+
+  opcionesVentanas: OpcionSelector[] = [1, 2, 3, 4, 5, 6].map((cantidad) => ({
+    valor: String(cantidad),
+    etiqueta: cantidad === 1 ? '1 ventana' : `${cantidad} ventanas seguidas`,
+    detalle: `Duración total: ${this.calcularDuracion(cantidad)}`,
+  }));
+
+  opcionesCervezas: OpcionSelector[] = ['Corona', 'Austral', 'Becker', 'Patagonia', 'Cusqueña']
+    .map((marca) => ({ valor: marca, etiqueta: marca }));
+
+  duracionSeleccionada = computed(() => {
+    const cantidad = this.ventanasSeleccionadas();
+    return cantidad === null ? '' : this.calcularDuracion(cantidad);
+  });
+
+  tiempoRestante = computed(() => this.formatearTiempo(this.segundosRestantes()));
+
+  abrirSelector() {
+    this.actualizarTiempo();
+    if (this.sesionActiva()) return;
+    this.selectorAbierto.set(true);
+  }
+
+  cerrarSelector() {
+    this.selectorAbierto.set(false);
+  }
+
+  confirmarVentanas(valor: string) {
+    if (this.sesionActiva()) return;
+    if (!this.opcionesVentanas.some((opcion) => opcion.valor === valor)) return;
+
+    const cantidad = Number(valor);
+    const duracionSegundos = cantidad * 70 * 60;
+    this.ventanasSeleccionadas.set(cantidad);
+    this.segundosRestantes.set(duracionSegundos);
+    this.inicioVentana = Date.now();
+    this.finVentana = this.inicioVentana + duracionSegundos * 1000;
+    this.motivoCierre.set(null);
+    this.consumos.set([]);
+    this.sesionActiva.set(true);
+    this.cerrarSelector();
+    this.detenerIntervalo();
+    this.intervalo = setInterval(() => this.actualizarTiempo(), 1000);
+  }
+
+  abrirSelectorCerveza() {
+    this.actualizarTiempo();
+    if (!this.sesionActiva()) return;
+    this.selectorCervezaAbierto.set(true);
+  }
+
+  cerrarSelectorCerveza() {
+    this.selectorCervezaAbierto.set(false);
+  }
+
+  confirmarCerveza(marca: string) {
+    this.actualizarTiempo();
+    if (!this.sesionActiva() || !this.selectorCervezaAbierto()) return;
+    if (!this.opcionesCervezas.some((opcion) => opcion.valor === marca)) return;
+
+    const consumo: Consumo = { marca, fecha: new Date().toISOString() };
+    this.consumos.update((actuales) => [...actuales, consumo]);
+    this.cerrarSelectorCerveza();
+  }
+
+  restarCerveza() {
+    this.actualizarTiempo();
+    if (!this.sesionActiva() || this.cantidadCervezas() === 0) return;
+    this.consumos.update((actuales) => actuales.slice(0, -1));
+  }
+
+  detenerPorEmbriaguez() {
+    this.actualizarTiempo();
+    if (!this.sesionActiva()) return;
+    this.finalizarSesion('embriaguez');
+  }
+
+  ionViewWillEnter() {
+    this.actualizarTiempo();
+  }
+
+  @HostListener('document:visibilitychange')
+  actualizarTiempo() {
+    if (this.finVentana === null) return;
+
+    // Recalculamos desde la hora de término, incluso si el navegador pausó el intervalo.
+    const segundos = Math.max(0, Math.ceil((this.finVentana - Date.now()) / 1000));
+    this.segundosRestantes.set(segundos);
+
+    if (segundos === 0) {
+      this.finalizarSesion('tiempo');
+    }
+  }
+
+  ngOnDestroy() {
+    this.detenerIntervalo();
+  }
+
+  private finalizarSesion(motivo: MotivoCierre) {
+    const ventanas = this.ventanasSeleccionadas();
+    if (!this.sesionActiva() || this.inicioVentana === null || this.finVentana === null || ventanas === null) return;
+
+    // Si el navegador estuvo pausado, el fin por tiempo sigue siendo la hora prevista.
+    const fin = motivo === 'tiempo' ? this.finVentana : Date.now();
+    this.historial.guardar({
+      inicio: new Date(this.inicioVentana).toISOString(),
+      fin: new Date(fin).toISOString(),
+      ventanas,
+      motivoCierre: motivo,
+      consumos: this.consumos(),
+    });
+    this.sesionActiva.set(false);
+    this.motivoCierre.set(motivo);
+    this.cerrarSelectorCerveza();
+    this.finVentana = null;
+    this.inicioVentana = null;
+    this.detenerIntervalo();
+  }
+
+  private detenerIntervalo() {
+    if (this.intervalo !== null) {
+      clearInterval(this.intervalo);
+      this.intervalo = null;
+    }
+  }
+
+  private calcularDuracion(cantidad: number): string {
+    return this.formatearTiempo(cantidad * 70 * 60);
+  }
+
+  private formatearTiempo(segundosTotales: number): string {
+    const horas = Math.floor(segundosTotales / 3600);
+    const minutos = Math.floor((segundosTotales % 3600) / 60);
+    const segundos = segundosTotales % 60;
+    return [horas, minutos, segundos]
+      .map((valor) => String(valor).padStart(2, '0'))
+      .join(':');
+  }
+}
+</file>
+
+<file path="app/tab2/tab2.page.html">
+<ion-header class="ion-no-border">
+  <app-encabezado titulo="Historial"></app-encabezado>
+</ion-header>
+
+<ion-content>
+  <div class="historial">
+    @for (sesion of sesiones(); track sesion.id; let indice = $index) {
+      <ion-card
+        class="sesion"
+        [class.tono-arena]="indice % 3 === 1"
+        [class.tono-oliva]="indice % 3 === 2"
+      >
+        <ion-card-content>
+          <div class="miniatura" aria-hidden="true">
+            <ion-icon name="image-outline"></ion-icon>
+          </div>
+          <div class="datos">
+            <h2>
+              <span>Fecha: {{ sesion.inicio | date: 'dd/MM/yyyy' }}</span>
+              <span>Hora: {{ sesion.inicio | date: 'HH:mm' }}</span>
+            </h2>
+            <p class="cantidad">Cervezas: {{ sesion.consumos.length }}</p>
+            <p>{{ sesion.motivoCierre === 'embriaguez' ? 'Embriaguez declarada' : 'Fin por tiempo' }}</p>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    } @empty {
+      <div class="estado-vacio" role="status">
+        <h2>Aún no tienes sesiones registradas</h2>
+        <p>Las sesiones aparecerán aquí cuando terminen por tiempo o las detengas desde Inicio.</p>
+      </div>
+    }
+  </div>
+</ion-content>
+</file>
+
+<file path="app/tab2/tab2.page.scss">
+.historial {
+  max-width: 600px;
+  margin-inline: auto;
+  padding: 20px 16px;
+}
+
+.sesion {
+  --background: #bd6365;
+  --color: var(--drinklimit-texto);
+  margin: 0 0 16px;
+  border-radius: 20px;
+  box-shadow: none;
+}
+
+.tono-arena {
+  --background: #bd9565;
+}
+
+.tono-oliva {
+  --background: #bcc05f;
+}
+
+ion-card-content {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+}
+
+.miniatura {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 76px;
+  border-radius: 14px;
+  background: var(--drinklimit-fondo);
+}
+
+.miniatura ion-icon {
+  font-size: 36px;
+}
+
+.datos {
+  min-width: 0;
+}
+
+.datos h2 {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.datos .cantidad {
+  margin-block: 6px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.estado-vacio {
+  padding: 40px 8px;
+  color: var(--drinklimit-texto);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.estado-vacio h2 {
+  font-size: 22px;
+}
+</file>
+
+<file path="app/tab2/tab2.page.spec.ts">
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Tab2Page } from './tab2.page';
+import { Tab1Page } from '../tab1/tab1.page';
+
+describe('Tab2Page', () => {
+  let component: Tab2Page;
+  let fixture: ComponentFixture<Tab2Page>;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(Tab2Page);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('muestra un estado vacío antes de finalizar sesiones', () => {
+    const elemento: HTMLElement = fixture.nativeElement;
+    expect(elemento.textContent).toContain('Aún no tienes sesiones registradas');
+    expect(elemento.querySelectorAll('ion-card').length).toBe(0);
+  });
+
+  it('recibe el cierre desde Inicio y actualiza el historial ya abierto', () => {
+    const inicioFixture = TestBed.createComponent(Tab1Page);
+    const inicio = inicioFixture.componentInstance;
+    try {
+      inicio.confirmarVentanas('1');
+      inicio.abrirSelectorCerveza();
+      inicio.confirmarCerveza('Corona');
+      inicio.detenerPorEmbriaguez();
+      fixture.detectChanges();
+
+      const elemento: HTMLElement = fixture.nativeElement;
+      expect(elemento.querySelectorAll('ion-card').length).toBe(1);
+      expect(elemento.textContent).toContain('Cervezas: 1');
+      expect(elemento.textContent).toContain('Embriaguez declarada');
+      expect(elemento.textContent).not.toContain('Aún no tienes sesiones registradas');
+    } finally {
+      inicioFixture.destroy();
+    }
+  });
+});
+</file>
+
+<file path="app/tab2/tab2.page.ts">
+import { Component, inject } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { IonHeader, IonContent, IonCard, IonCardContent, IonIcon } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { imageOutline } from 'ionicons/icons';
+import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
+import { HistorialLocalService } from '../services/historial-local.service';
+
+@Component({
+  selector: 'app-tab2',
+  templateUrl: 'tab2.page.html',
+  styleUrls: ['tab2.page.scss'],
+  imports: [IonHeader, IonContent, IonCard, IonCardContent, IonIcon, DatePipe, EncabezadoComponent]
+})
+export class Tab2Page {
+  private historial = inject(HistorialLocalService);
+  sesiones = this.historial.sesiones;
+
+  constructor() {
+    addIcons({ imageOutline });
+  }
+}
+</file>
+
+<file path="app/tab3/tab3.page.html">
+<ion-header class="ion-no-border">
+  <app-encabezado titulo="Perfil"></app-encabezado>
+</ion-header>
+
+<ion-content>
+  <div class="perfil">
+    <div class="foto">
+      <ion-avatar>
+        @if (fotoVisible()) {
+          <img [src]="fotoVisible()" alt="Foto de perfil" />
+        } @else {
+          <ion-icon name="person-outline" aria-label="Sin foto de perfil" role="img"></ion-icon>
+        }
+      </ion-avatar>
+
+      @if (editando()) {
+        <input #archivoFoto type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="seleccionarFoto($event)" />
+        <ion-button fill="outline" type="button" [disabled]="leyendoFoto()" (click)="archivoFoto.click()">
+          {{ leyendoFoto() ? 'Leyendo imagen…' : 'Cambiar foto' }}
+        </ion-button>
+        <ion-note>JPG, PNG o WebP · Máximo 5 MB</ion-note>
+      }
+    </div>
+
+    @if (editando()) {
+      <form #formulario="ngForm" (ngSubmit)="guardar()">
+        <ion-input label="Nombre" labelPlacement="stacked" name="nombre" required [(ngModel)]="borrador.first_name"></ion-input>
+        <ion-input label="Apellido" labelPlacement="stacked" name="apellido" required [(ngModel)]="borrador.last_name"></ion-input>
+        <ion-select label="Sexo" labelPlacement="stacked" name="sexo" required [(ngModel)]="borrador.gender" cancelText="Cancelar" okText="Aceptar">
+          <ion-select-option value="M">M</ion-select-option>
+          <ion-select-option value="F">F</ion-select-option>
+          <ion-select-option value="Otro">Otro</ion-select-option>
+        </ion-select>
+        <p>Edad: {{ edad() }} años</p>
+        <p class="nacimiento">Nacimiento: {{ perfil().birth_date | date: 'dd/MM/yyyy' }} · No editable</p>
+        <div class="acciones">
+          <ion-button fill="outline" type="button" (click)="cancelar()">Cancelar</ion-button>
+          <ion-button type="submit" [disabled]="formulario.invalid || leyendoFoto()">Guardar</ion-button>
+        </div>
+      </form>
+    } @else {
+      <div class="datos">
+        <p class="nombre">{{ perfil().first_name }} {{ perfil().last_name }}</p>
+        <div class="fila">
+          <p>Edad: {{ edad() }} años</p>
+          <p>Sexo: {{ perfil().gender }}</p>
+        </div>
+        <p class="nacimiento">Nacimiento: {{ perfil().birth_date | date: 'dd/MM/yyyy' }}</p>
+        <ion-button fill="outline" type="button" (click)="editar()">Editar perfil</ion-button>
+      </div>
+    }
+
+    @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+    @if (aviso()) { <p role="status">{{ aviso() }}</p> }
+
+    <ion-card class="estadisticas">
+      <ion-card-content>
+        <h2>Top AlcohilDrink</h2>
+        <dl>
+          <div><dt>Veces curado</dt><dd>{{ vecesCurado() }}</dd></div>
+          <div><dt>Tope de tragos</dt><dd>{{ topeTragos() ?? 'Sin datos' }}</dd></div>
+          <div><dt>Límite histórico</dt><dd>{{ limitePersonal() ?? 'Sin datos' }}</dd></div>
+        </dl>
+        <p class="nota">Límite histórico: mayor consumo registrado en una sesión terminada por embriaguez.</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+</file>
+
+<file path="app/tab3/tab3.page.scss">
+.perfil {
+  max-width: 520px;
+  margin-inline: auto;
+  padding: 24px;
+}
+
+.foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+ion-avatar {
+  display: grid;
+  place-items: center;
+  width: 144px;
+  height: 144px;
+  background: #e8f4fa;
+  overflow: hidden;
+}
+
+ion-avatar ion-icon {
+  font-size: 80px;
+}
+
+.nombre {
+  font-size: 22px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.fila, .acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.nacimiento, .nota {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+ion-input, ion-select {
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--drinklimit-borde);
+}
+
+ion-button {
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  --border-radius: 12px;
+  min-height: 44px;
+  text-transform: none;
+}
+
+ion-button[fill='outline'] {
+  --background: transparent;
+  --color: var(--drinklimit-rojo);
+  --border-color: var(--drinklimit-rojo);
+}
+
+.estadisticas {
+  --background: var(--drinklimit-rojo);
+  --color: var(--drinklimit-fondo);
+  margin: 24px 0 0;
+  border-radius: 20px;
+}
+
+.estadisticas h2 {
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+dl > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+.error {
+  color: var(--drinklimit-rojo-oscuro);
+}
+</file>
+
+<file path="app/tab3/tab3.page.spec.ts">
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { Tab3Page } from './tab3.page';
+
+describe('Tab3Page', () => {
+  let component: Tab3Page;
+  let fixture: ComponentFixture<Tab3Page>;
+
+  beforeEach(async () => {
+    fixture = TestBed.createComponent(Tab3Page);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
+    vi.useRealTimers();
+  });
+
+  it('cancelar descarta los cambios y guardar actualiza el perfil', () => {
+    const original = component.perfil();
+    component.editar();
+    component.borrador.first_name = 'Ana';
+    component.fotoBorrador.set('imagen temporal');
+    component.cancelar();
+    expect(component.perfil()).toBe(original);
+    expect(component.fotoVisible()).toBeNull();
+    component.editar();
+    component.borrador.first_name = 'Ana';
+    component.borrador.gender = 'F';
+    component.guardar();
+    expect(component.perfil().first_name).toBe('Ana');
+    expect(component.perfil().gender).toBe('F');
+    expect(component.editando()).toBe(false);
+  });
+
+  it('mantiene la edición y muestra un error si el nombre solo contiene espacios', () => {
+    component.editar();
+    component.borrador.first_name = '   ';
+    component.guardar();
+    expect(component.editando()).toBe(true);
+    expect(component.error()).toContain('Completa');
+  });
+
+  it('calcula la edad antes y después del cumpleaños usando la fecha local', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 4, 13));
+    component.ionViewWillEnter();
+    expect(component.edad()).toBe(20);
+    vi.setSystemTime(new Date(2026, 4, 14));
+    component.ionViewWillEnter();
+    expect(component.edad()).toBe(21);
+  });
+
+  function elegirArchivo(archivo: File) {
+    const campo = document.createElement('input');
+    campo.type = 'file';
+    Object.defineProperty(campo, 'files', { value: [archivo] });
+    component.seleccionarFoto({ target: campo } as unknown as Event);
+  }
+
+  it('lee una foto como vista previa y solo la conserva al guardar', async () => {
+    component.editar();
+    elegirArchivo(new File(['imagen'], 'foto.png', { type: 'image/png' }));
+    await vi.waitFor(() => expect(component.leyendoFoto()).toBe(false));
+    expect(component.fotoVisible()).toMatch(/^data:image\/png;base64,/);
+    expect(component.perfil().foto).toBeNull();
+    component.guardar();
+    expect(component.perfil().foto).toBe(component.fotoVisible());
+  });
+
+  it('rechaza archivos incompatibles y fotos que exceden el tamaño permitido', () => {
+    component.editar();
+    elegirArchivo(new File(['texto'], 'archivo.txt', { type: 'text/plain' }));
+    expect(component.error()).toContain('JPG, PNG o WebP');
+    elegirArchivo(new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'grande.png', { type: 'image/png' }));
+    expect(component.error()).toContain('5 MB');
+    expect(component.fotoVisible()).toBeNull();
+  });
+});
+</file>
+
+<file path="app/tab3/tab3.page.ts">
+import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import {
+  IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput,
+  IonSelect, IonSelectOption, IonCard, IonCardContent, IonNote,
+} from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { personOutline } from 'ionicons/icons';
+import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
+import { Sexo } from '../models/perfil-local.model';
+import { PerfilLocalService } from '../services/perfil-local.service';
+import { HistorialLocalService } from '../services/historial-local.service';
+
+@Component({
+  selector: 'app-tab3',
+  templateUrl: 'tab3.page.html',
+  styleUrls: ['tab3.page.scss'],
+  imports: [
+    IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput, IonSelect,
+    IonSelectOption, IonCard, IonCardContent, IonNote, FormsModule, DatePipe, EncabezadoComponent,
+  ],
+})
+export class Tab3Page implements OnDestroy {
+  private servicio = inject(PerfilLocalService);
+  private historial = inject(HistorialLocalService);
+  private hoy = signal(new Date());
+  private lectorFoto: FileReader | null = null;
+
+  perfil = this.servicio.perfil;
+  vecesCurado = this.historial.vecesCurado;
+  topeTragos = this.historial.topeTragos;
+  limitePersonal = this.historial.limitePersonal;
+  editando = signal(false);
+  leyendoFoto = signal(false);
+  fotoBorrador = signal<string | null>(null);
+  error = signal('');
+  aviso = signal('');
+  borrador: { first_name: string; last_name: string; gender: Sexo } = {
+    first_name: '', last_name: '', gender: 'Otro',
+  };
+
+  fotoVisible = computed(() => this.editando() ? this.fotoBorrador() : this.perfil().foto);
+
+  edad = computed(() => {
+    const [anio, mes, dia] = this.perfil().birth_date.split('-').map(Number);
+    const hoy = this.hoy();
+    let edad = hoy.getFullYear() - anio!;
+    const faltaCumpleanos = hoy.getMonth() + 1 < mes! ||
+      (hoy.getMonth() + 1 === mes! && hoy.getDate() < dia!);
+    if (faltaCumpleanos) edad--;
+    return edad;
+  });
+
+  constructor() {
+    addIcons({ personOutline });
+  }
+
+  ionViewWillEnter() {
+    this.hoy.set(new Date());
+  }
+
+  editar() {
+    const perfil = this.perfil();
+    this.borrador = { first_name: perfil.first_name, last_name: perfil.last_name, gender: perfil.gender };
+    this.fotoBorrador.set(perfil.foto);
+    this.error.set('');
+    this.aviso.set('');
+    this.editando.set(true);
+  }
+
+  cancelar() {
+    this.cancelarLectura();
+    this.editando.set(false);
+    this.error.set('');
+  }
+
+  guardar() {
+    if (!this.editando() || this.leyendoFoto()) return;
+    try {
+      this.servicio.guardar({ ...this.borrador, foto: this.fotoBorrador() });
+      this.editando.set(false);
+      this.error.set('');
+      this.aviso.set('Perfil actualizado.');
+    } catch (error) {
+      this.error.set(error instanceof Error ? error.message : 'No se pudo actualizar el perfil.');
+    }
+  }
+
+  seleccionarFoto(evento: Event) {
+    const campo = evento.target as HTMLInputElement;
+    const archivo = campo.files?.[0];
+    campo.value = '';
+    if (!archivo || !this.editando()) return;
+    this.cancelarLectura();
+    this.error.set('');
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
+      this.error.set('Selecciona una imagen JPG, PNG o WebP.');
+      return;
+    }
+    if (archivo.size > 5 * 1024 * 1024) {
+      this.error.set('La imagen debe pesar como máximo 5 MB.');
+      return;
+    }
+
+    const lector = new FileReader();
+    this.lectorFoto = lector;
+    this.leyendoFoto.set(true);
+    lector.onload = () => {
+      if (this.editando() && typeof lector.result === 'string') this.fotoBorrador.set(lector.result);
+      this.leyendoFoto.set(false);
+      this.lectorFoto = null;
+    };
+    lector.onerror = () => {
+      this.error.set('No se pudo leer la imagen. Intenta con otra.');
+      this.leyendoFoto.set(false);
+      this.lectorFoto = null;
+    };
+    lector.readAsDataURL(archivo);
+  }
+
+  ngOnDestroy() {
+    this.cancelarLectura();
+  }
+
+  private cancelarLectura() {
+    this.lectorFoto?.abort();
+    this.lectorFoto = null;
+    this.leyendoFoto.set(false);
+  }
+}
+</file>
+
+<file path="app/tabs/tabs.page.html">
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="tab1" href="/tabs/tab1">
+      <ion-icon aria-hidden="true" name="home"></ion-icon>
+      <ion-label>Inicio</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="tab2" href="/tabs/tab2">
+      <ion-icon aria-hidden="true" name="reload"></ion-icon>
+      <ion-label>Historial</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="tab3" href="/tabs/tab3">
+      <ion-icon aria-hidden="true" name="person"></ion-icon>
+      <ion-label>Perfil</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>
+</file>
+
+<file path="app/tabs/tabs.page.scss">
+:host {
+  --ion-background-color: var(--drinklimit-fondo);
+  --ion-text-color: var(--drinklimit-texto);
+}
+
+ion-tab-bar {
+  --background: var(--drinklimit-fondo);
+  --border: 1px solid var(--drinklimit-borde);
+  height: 88px;
+}
+
+ion-tab-button {
+  --color: var(--drinklimit-texto);
+  --color-selected: var(--drinklimit-rojo-oscuro);
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  max-width: 120px;
+}
+
+ion-icon {
+  box-sizing: content-box;
+  width: 30px;
+  height: 30px;
+  padding: 6px 14px;
+  border-radius: 24px;
+  background: var(--drinklimit-rojo);
+  color: var(--drinklimit-fondo);
+}
+
+ion-label {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+ion-tab-button.tab-selected ion-label {
+  font-weight: 700;
+}
+
+ion-tab-button.tab-selected ion-icon {
+  background: var(--drinklimit-rojo-oscuro);
+}
+</file>
+
+<file path="app/tabs/tabs.page.spec.ts">
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+
+import { TabsPage } from './tabs.page';
+
+describe('TabsPage', () => {
+  let component: TabsPage;
+  let fixture: ComponentFixture<TabsPage>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TabsPage],
+      providers: [provideRouter([])]
+    }).compileComponents();
+  });
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TabsPage);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
+</file>
+
+<file path="app/tabs/tabs.page.ts">
+import { Component, EnvironmentInjector, inject } from '@angular/core';
+import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular';
+import { addIcons } from 'ionicons';
+import { home, reload, person } from 'ionicons/icons';
+
+@Component({
+  selector: 'app-tabs',
+  templateUrl: 'tabs.page.html',
+  styleUrls: ['tabs.page.scss'],
+  imports: [IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel],
+})
+export class TabsPage {
+  public environmentInjector = inject(EnvironmentInjector);
+
+  constructor() {
+    addIcons({ home, reload, person });
+  }
+}
+</file>
+
+<file path="app/tabs/tabs.routes.ts">
+import { Routes } from '@angular/router';
+import { TabsPage } from './tabs.page';
+
+export const routes: Routes = [
+  {
+    path: 'tabs',
+    component: TabsPage,
+    children: [
+      {
+        path: 'tab1',
+        loadComponent: () =>
+          import('../tab1/tab1.page').then((m) => m.Tab1Page),
+      },
+      {
+        path: 'tab2',
+        loadComponent: () =>
+          import('../tab2/tab2.page').then((m) => m.Tab2Page),
+      },
+      {
+        path: 'tab3',
+        loadComponent: () =>
+          import('../tab3/tab3.page').then((m) => m.Tab3Page),
+      },
+      {
+        path: '',
+        redirectTo: '/tabs/tab1',
+        pathMatch: 'full',
+      },
+    ],
+  },
+  {
+    path: '',
+    redirectTo: '/tabs/tab1',
+    pathMatch: 'full',
+  },
+];
+</file>
+
+<file path="app/app.component.html">
+<ion-app>
+  <ion-router-outlet></ion-router-outlet>
+</ion-app>
+</file>
+
+<file path="app/app.component.scss">
+
+</file>
+
+<file path="app/app.component.spec.ts">
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { AppComponent } from './app.component';
+
+describe('AppComponent', () => {
+  it('should create the app', async () => {
+    await TestBed.configureTestingModule({
+      imports: [AppComponent],
+      providers: [provideRouter([])]
+    }).compileComponents();
+    
+    const fixture = TestBed.createComponent(AppComponent);
+    const app = fixture.componentInstance;
+    expect(app).toBeTruthy();
+  });
+});
+</file>
+
+<file path="app/app.component.ts">
+import { Component } from '@angular/core';
+import { IonApp, IonRouterOutlet } from '@ionic/angular';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: 'app.component.html',
+  imports: [IonApp, IonRouterOutlet],
+})
+export class AppComponent {
+  constructor() {}
+}
+</file>
+
+<file path="app/app.routes.ts">
+import { Routes } from '@angular/router';
+
+export const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () => import('./tabs/tabs.routes').then((m) => m.routes),
+  },
+];
+</file>
+
+<file path="assets/shapes.svg">
+<svg width="350" height="140" xmlns="http://www.w3.org/2000/svg" style="background:#f6f7f9"><g fill="none" fill-rule="evenodd"><path fill="#F04141" style="mix-blend-mode:multiply" d="M61.905-34.23l96.194 54.51-66.982 54.512L22 34.887z"/><circle fill="#10DC60" style="mix-blend-mode:multiply" cx="155.5" cy="135.5" r="57.5"/><path fill="#3880FF" style="mix-blend-mode:multiply" d="M208.538 9.513l84.417 15.392L223.93 93.93z"/><path fill="#FFCE00" style="mix-blend-mode:multiply" d="M268.625 106.557l46.332-26.75 46.332 26.75v53.5l-46.332 26.75-46.332-26.75z"/><circle fill="#7044FF" style="mix-blend-mode:multiply" cx="299.5" cy="9.5" r="38.5"/><rect fill="#11D3EA" style="mix-blend-mode:multiply" transform="rotate(-60 148.47 37.886)" x="143.372" y="-7.056" width="10.196" height="89.884" rx="5.098"/><path d="M-25.389 74.253l84.86 8.107c5.498.525 9.53 5.407 9.004 10.905a10 10 0 0 1-.057.477l-12.36 85.671a10.002 10.002 0 0 1-11.634 8.42l-86.351-15.226c-5.44-.959-9.07-6.145-8.112-11.584l13.851-78.551a10 10 0 0 1 10.799-8.219z" fill="#7044FF" style="mix-blend-mode:multiply"/><circle fill="#0CD1E8" style="mix-blend-mode:multiply" cx="273.5" cy="106.5" r="20.5"/></g></svg>
+</file>
+
+<file path="environments/environment.prod.ts">
+export const environment = {
+  production: true
+};
+</file>
+
+<file path="environments/environment.ts">
+// This file can be replaced during build by using the `fileReplacements` array.
+// `ng build` replaces `environment.ts` with `environment.prod.ts`.
+// The list of file replacements can be found in `angular.json`.
+
+export const environment = {
+  production: false,
+  supabaseUrl: 'https://keuzgsjixrdsuodpvyqc.supabase.co',
+  supabaseAnonKey: 'sb_publishable_FlsOHy_TMcJCUEglMN0yuQ_9bZqN1tA',
+};
+/*
+ * For easier debugging in development mode, you can import the following file
+ * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
+ *
+ * This import should be commented out in production mode because it will have a negative impact
+ * on performance if an error is thrown.
+ */
+// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+</file>
+
+<file path="theme/variables.scss">
+// For information on how to create your own theme, please refer to:
+// https://ionicframework.com/docs/theming/
+
+:root {
+  color-scheme: light;
+  --drinklimit-rojo: #cf252b;
+  --drinklimit-rojo-oscuro: #b51f25;
+  --drinklimit-fondo: #ffffff;
+  --drinklimit-texto: #171717;
+  --drinklimit-borde: #dddddd;
+
+  --ion-background-color: var(--drinklimit-fondo);
+  --ion-background-color-rgb: 255, 255, 255;
+  --ion-text-color: var(--drinklimit-texto);
+  --ion-text-color-rgb: 23, 23, 23;
+  --ion-item-background: var(--drinklimit-fondo);
+  --ion-toolbar-background: var(--drinklimit-fondo);
+  --ion-card-background: var(--drinklimit-fondo);
+}
+</file>
+
+<file path="global.scss">
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+// Usamos el tema claro de Ionic. No cargamos la paleta oscura del sistema.
+</file>
+
+<file path="index.html">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Drink Limit</title>
+
+  <base href="/" />
+
+  <meta name="color-scheme" content="light" />
+  <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <link rel="icon" type="image/png" href="assets/icon/DrinkLimitLogo.png" />
+
+  <!-- add to homescreen for ios -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+</head>
+
+<body>
+  <app-root></app-root>
+</body>
+
+</html>
+</file>
+
+<file path="main.ts">
+import { bootstrapApplication } from '@angular/platform-browser';
+import { RouteReuseStrategy, provideRouter, withComponentInputBinding, withPreloading, PreloadAllModules } from '@angular/router';
+import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
+
+import { routes } from './app/app.routes';
+import { AppComponent } from './app/app.component';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    provideIonicAngular(),
+    provideRouter(routes, withPreloading(PreloadAllModules), withComponentInputBinding()),
+  ],
+});
+</file>
+
+<file path="test-setup.ts">
+// Polyfills for running unit tests under jsdom (the default Vitest environment).
+// Ionic components such as ion-menu and ion-split-pane query `window.matchMedia`,
+// which jsdom does not implement.
+if (!window.matchMedia) {
+  window.matchMedia = (query: string): MediaQueryList =>
+    ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      dispatchEvent: () => false,
+    }) as MediaQueryList;
+}
+</file>
+
+</files>
