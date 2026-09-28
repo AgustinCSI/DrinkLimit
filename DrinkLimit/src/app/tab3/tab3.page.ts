@@ -1,16 +1,18 @@
 import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput,
   IonSelect, IonSelectOption, IonCard, IonCardContent, IonNote,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { personOutline } from 'ionicons/icons';
+import { personOutline, logOutOutline } from 'ionicons/icons';
 import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
 import { Sexo } from '../models/perfil-local.model';
 import { PerfilLocalService } from '../services/perfil-local.service';
 import { HistorialLocalService } from '../services/historial-local.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-tab3',
@@ -24,6 +26,9 @@ import { HistorialLocalService } from '../services/historial-local.service';
 export class Tab3Page implements OnDestroy {
   private servicio = inject(PerfilLocalService);
   private historial = inject(HistorialLocalService);
+  private auth = inject(AuthService);
+  private router = inject(Router);
+
   private hoy = signal(new Date());
   private lectorFoto: FileReader | null = null;
 
@@ -53,11 +58,20 @@ export class Tab3Page implements OnDestroy {
   });
 
   constructor() {
-    addIcons({ personOutline });
+    addIcons({ personOutline, logOutOutline });
   }
 
   ionViewWillEnter() {
     this.hoy.set(new Date());
+  }
+
+  async cerrarSesion() {
+    try {
+      await this.auth.salir();
+      await this.router.navigateByUrl('/login', { replaceUrl: true });
+    } catch {
+      this.error.set('No se pudo cerrar la sesión. Intenta nuevamente.');
+    }
   }
 
   editar() {
