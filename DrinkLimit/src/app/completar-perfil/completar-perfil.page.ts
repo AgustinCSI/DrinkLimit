@@ -37,6 +37,7 @@ export class CompletarPerfilPage implements OnInit {
   guardando = signal(false);
   intentado = signal(false);
   error = signal("");
+  email = signal("");
 
   private userId = "";
 
@@ -57,8 +58,8 @@ export class CompletarPerfilPage implements OnInit {
         return;
       }
       this.userId = usuario.id;
+      this.email.set(usuario.email ?? ""); // <-- Capture the email
 
-      // Si el perfil ya existe, esta página no tiene nada que hacer.
       const perfil = await this.users.obtener(this.userId);
       if (perfil) {
         this.router.navigateByUrl("/tabs/tab1", { replaceUrl: true });
@@ -137,4 +138,6 @@ export class CompletarPerfilPage implements OnInit {
     }
     return "No se pudo guardar el perfil. Intenta de nuevo.";
   }
+
+  
 }
