@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 export interface DatosRecuerdo {
-  vecesCurado: number;
+  vecesCurado: number | null;
   topeTragos: number | null;
   limitePersonal: number | null;
   foto: string | null;
@@ -23,7 +23,7 @@ export class RecuerdoService {
     contexto.font = 'bold 48px Arial, sans-serif';
     contexto.fillText('Top AlcohilDrink', 48, 88);
     contexto.font = '30px Arial, sans-serif';
-    contexto.fillText(`Veces curado: ${datos.vecesCurado}`, 48, 166);
+    contexto.fillText(`Veces curado: ${datos.vecesCurado ?? 'Sin datos'}`, 48, 166);
     contexto.fillText(`Tope de tragos: ${datos.topeTragos ?? 'Sin datos'}`, 48, 230);
     contexto.fillText(`Límite histórico: ${datos.limitePersonal ?? 'Sin datos'}`, 48, 294);
 
@@ -54,7 +54,7 @@ export class RecuerdoService {
       const imagen = new Image();
       imagen.crossOrigin = 'anonymous';
       imagen.onload = () => resolve(imagen);
-      imagen.onerror = () => reject(new Error('No se pudo cargar la foto. Cambia la foto del perfil o vuelve a intentarlo.'));
+      imagen.onerror = () => reject(new Error('No se pudo cargar la foto. Revisa la foto del evento en el historial o vuelve a intentarlo.'));
       imagen.src = url;
     });
   }

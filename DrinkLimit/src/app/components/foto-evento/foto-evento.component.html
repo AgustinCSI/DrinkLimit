@@ -1,0 +1,15 @@
+<div class="foto-evento">
+  @if (fotoUrl) { <img [src]="fotoUrl" alt="Foto del evento" loading="lazy" /> }
+  <p>Foto del evento (opcional)</p>
+  <input #archivo type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="seleccionar($event)" />
+  <ion-button type="button" size="small" [disabled]="guardando()" (click)="archivo.click()">
+    {{ guardando() ? 'Guardando foto…' : fotoUrl ? 'Cambiar foto del evento' : 'Agregar foto del evento' }}
+  </ion-button>
+  @if (aviso()) { <p role="status">{{ aviso() }}</p> }
+  @if (error()) {
+    <p role="alert">{{ error() }}</p>
+    @if (puedeReintentar()) {
+      <ion-button type="button" size="small" [disabled]="guardando()" (click)="guardar()">Reintentar foto</ion-button>
+    }
+  }
+</div>

@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Tab3Page } from './tab3.page';
-import { HistorialLocalService } from '../services/historial-local.service';
+import { HistorialService } from '../services/historial.service';
 import { AuthService } from '../services/auth.service';
 import { AppUser, UsersService } from '../services/users.service';
+import { SessionsService } from '../services/drinking-sessions.service';
 import { FotosService } from '../services/fotos.service';
 
 // Las respuestas se simulan: las pruebas no escriben en Supabase.
@@ -11,6 +12,7 @@ describe('Tab3Page con perfil de Supabase', () => {
   let component: Tab3Page;
   let fixture: ComponentFixture<Tab3Page>;
   const usuario = vi.fn();
+  const historialRemoto = vi.fn();
   const obtener = vi.fn();
   const guardarPerfil = vi.fn();
   const cargar = vi.fn();
@@ -22,6 +24,7 @@ describe('Tab3Page con perfil de Supabase', () => {
   };
 
   beforeEach(async () => {
+    historialRemoto.mockReset().mockResolvedValue([]);
     usuario.mockReset().mockResolvedValue({ id: perfil.id });
     obtener.mockReset().mockResolvedValue({ ...perfil });
     guardarPerfil.mockReset().mockResolvedValue(undefined);
@@ -30,6 +33,7 @@ describe('Tab3Page con perfil de Supabase', () => {
     navigateByUrl.mockReset().mockResolvedValue(true);
     vi.stubGlobal('URL', { createObjectURL: vi.fn(() => 'blob:foto-temporal') });
     TestBed.configureTestingModule({ providers: [
+      { provide: SessionsService, useValue: { historial: historialRemoto, tragosDeSesion: vi.fn().mockResolvedValue([]) } },
       { provide: AuthService, useValue: { usuario, salir } },
       { provide: UsersService, useValue: { obtener, guardarPerfil } },
       { provide: FotosService, useValue: { cargar } },
@@ -81,19 +85,24 @@ describe('Tab3Page con perfil de Supabase', () => {
     expect(component.editando()).toBe(false);
   });
 
-  it('el recuerdo usa avatar_url guardado y actualiza sus indicadores al reabrir', () => {
+  it('el recuerdo sin foto del evento no usa el avatar y actualiza sus indicadores al reabrir', async () => {
     component.abrirRecuerdo();
     expect(component.recuerdoAbierto()).toBe(true);
-    expect(component.datosRecuerdo.foto).toBe(perfil.avatar_url);
+    expect(component.datosRecuerdo.foto).toBeNull();
     expect(component.datosRecuerdo.topeTragos).toBeNull();
-    TestBed.inject(HistorialLocalService).guardar({
-      inicio: '2026-09-27T18:00:00Z', fin: '2026-09-27T18:10:00Z',
-      ventanas: 1, motivoCierre: 'embriaguez', consumos: [],
-    });
+    historialRemoto.mockResolvedValue([{ id: 's1', start_time: '2026-09-27T18:00:00Z', end_time: '2026-09-27T18:10:00Z', window_count: 1, end_reason: 'embriaguez' }]);
+    await TestBed.inject(HistorialService).cargar();
     expect(component.datosRecuerdo.topeTragos).toBeNull();
     component.abrirRecuerdo();
     expect(component.datosRecuerdo.topeTragos).toBe(0);
     expect(component.datosRecuerdo.vecesCurado).toBe(1);
+  });
+
+  it('usa la foto del evento tope en el modal del perfil', async () => {
+    historialRemoto.mockResolvedValue([{ id: 's1', photo_url: 'https://example.com/evento.png', end_reason: 'tiempo' }]);
+    await component.ionViewWillEnter();
+    component.abrirRecuerdo();
+    expect(component.datosRecuerdo.foto).toBe('https://example.com/evento.png');
   });
 
   it('no abre el recuerdo con un perfil pendiente o una foto sin guardar', () => {
@@ -106,7 +115,7 @@ describe('Tab3Page con perfil de Supabase', () => {
     expect(component.recuerdoAbierto()).toBe(false);
   });
 
-  it('sube la foto antes de persistir su URL y la usa en el recuerdo', async () => {
+  it('sube el avatar antes de persistir su URL sin usarlo en el recuerdo', async () => {
     component.editar();
     const archivo = new File(['imagen'], 'foto.png', { type: 'image/png' });
     elegirArchivo(archivo);
@@ -117,7 +126,7 @@ describe('Tab3Page con perfil de Supabase', () => {
     expect(guardarPerfil).toHaveBeenCalledWith(perfil.id, expect.objectContaining({ avatar_url: 'https://example.com/nueva.png' }));
     expect(cargar.mock.invocationCallOrder[0]).toBeLessThan(guardarPerfil.mock.invocationCallOrder[0]!);
     component.abrirRecuerdo();
-    expect(component.datosRecuerdo.foto).toBe('https://example.com/nueva.png');
+    expect(component.datosRecuerdo.foto).toBeNull();
   });
 
   it('si falla Storage conserva el perfil y no escribe una URL nueva', async () => {

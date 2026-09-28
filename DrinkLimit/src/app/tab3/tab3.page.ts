@@ -9,7 +9,7 @@ import {
 import { addIcons } from 'ionicons';
 import { personOutline, logOutOutline } from 'ionicons/icons';
 import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
-import { HistorialLocalService } from '../services/historial-local.service';
+import { HistorialService } from '../services/historial.service';
 import { AuthService } from '../services/auth.service';
 import { AppUser, PerfilEditable, UsersService } from '../services/users.service';
 import { FotosService } from '../services/fotos.service';
@@ -30,7 +30,7 @@ export class Tab3Page {
   private auth = inject(AuthService);
   private fotos = inject(FotosService);
   private router = inject(Router);
-  private historial = inject(HistorialLocalService);
+  historial = inject(HistorialService);
 
   private hoy = signal(new Date());
   private userId = '';
@@ -85,7 +85,7 @@ export class Tab3Page {
 
   async ionViewWillEnter() {
     this.hoy.set(new Date());
-    await this.cargarPerfil();
+    await Promise.all([this.cargarPerfil(), this.historial.cargar()]);
   }
 
   async cargarPerfil() {
@@ -112,13 +112,13 @@ export class Tab3Page {
 
   abrirRecuerdo() {
     const perfil = this.perfil();
-    if (!perfil || this.editando()) return;
-    // Usamos la foto persistida en Supabase, no la vista previa sin guardar.
+    if (!perfil || this.editando() || this.historial.cargando() || this.historial.error()) return;
+    // El recuerdo usa el evento con más cervezas, independientemente del motivo de cierre.
     this.datosRecuerdo = {
       vecesCurado: this.vecesCurado(),
       topeTragos: this.topeTragos(),
       limitePersonal: this.limitePersonal(),
-      foto: perfil.avatar_url ?? null,
+      foto: this.historial.sesionTope()?.fotoUrl ?? null,
     };
     this.recuerdoAbierto.set(true);
   }

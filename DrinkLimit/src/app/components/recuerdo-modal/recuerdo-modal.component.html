@@ -17,7 +17,7 @@
     @if (imagenUrl()) {
       <img [src]="imagenUrl()" alt="Recuerdo DrinkLimit con tu foto y estadísticas" />
       <p class="resumen">
-        Veces curado: {{ datos.vecesCurado }} · Tope de tragos: {{ datos.topeTragos ?? 'Sin datos' }} ·
+        Veces curado: {{ datos.vecesCurado ?? 'Sin datos' }} · Tope de tragos: {{ datos.topeTragos ?? 'Sin datos' }} ·
         Límite histórico: {{ datos.limitePersonal ?? 'Sin datos' }}
       </p>
     }

@@ -3,10 +3,11 @@ import { Consumo } from './consumo.model';
 export type MotivoCierre = 'tiempo' | 'embriaguez';
 
 export interface SesionFinalizada {
-  id: number;
+  id: string;
   inicio: string;
   fin: string;
-  ventanas: number;
-  motivoCierre: MotivoCierre;
+  ventanas: number | null;
+  motivoCierre: MotivoCierre | null;
   consumos: Consumo[];
+  fotoUrl?: string | null;
 }
