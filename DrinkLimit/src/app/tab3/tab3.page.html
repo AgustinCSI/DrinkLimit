@@ -4,75 +4,114 @@
 
 <ion-content>
   <div class="perfil">
-    <div class="foto">
-      <ion-avatar>
-        @if (fotoVisible()) {
-          <img [src]="fotoVisible()" alt="Foto de perfil" />
+    @if (cargando()) {
+      <div class="cargando">
+        <ion-spinner></ion-spinner>
+      </div>
+    } @else if (perfil()) {
+      <div class="foto">
+        <ion-avatar>
+          @if (fotoVisible()) {
+            <img [src]="fotoVisible()" alt="Foto de perfil" />
+          } @else {
+            <ion-icon name="person-outline" aria-label="Sin foto de perfil" role="img"></ion-icon>
+          }
+        </ion-avatar>
+
+        @if (editando()) {
+          <input
+            #archivoFoto
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            hidden
+            (change)="seleccionarFoto($event)"
+          />
+          <ion-button
+            fill="outline"
+            type="button"
+            [disabled]="guardando()"
+            (click)="archivoFoto.click()"
+          >
+            Cambiar foto
+          </ion-button>
+          <ion-note>JPG, PNG o WebP · Máximo 5 MB</ion-note>
         } @else {
-          <ion-icon name="person-outline" aria-label="Sin foto de perfil" role="img"></ion-icon>
+          <p class="usuario-tag">@{{ perfil()!.username }}</p>
         }
-      </ion-avatar>
+      </div>
 
       @if (editando()) {
-        <input #archivoFoto type="file" accept="image/jpeg,image/png,image/webp" hidden (change)="seleccionarFoto($event)" />
-        <ion-button fill="outline" type="button" [disabled]="leyendoFoto()" (click)="archivoFoto.click()">
-          {{ leyendoFoto() ? 'Leyendo imagen…' : 'Cambiar foto' }}
-        </ion-button>
-        <ion-note>JPG, PNG o WebP · Máximo 5 MB</ion-note>
+        <form #formulario="ngForm" (ngSubmit)="guardar()">
+          <ion-input
+            label="Nombre" labelPlacement="stacked" name="nombre" required
+            [(ngModel)]="borrador.first_name"
+          ></ion-input>
+
+          <ion-input
+            label="Apellido" labelPlacement="stacked" name="apellido" required
+            [(ngModel)]="borrador.last_name"
+          ></ion-input>
+
+          <ion-select
+            label="Sexo" labelPlacement="stacked" name="sexo" required
+            [(ngModel)]="borrador.gender" cancelText="Cancelar" okText="Aceptar"
+          >
+            <ion-select-option value="M">M</ion-select-option>
+            <ion-select-option value="F">F</ion-select-option>
+            <ion-select-option value="Otro">Otro</ion-select-option>
+          </ion-select>
+
+          <p class="nacimiento">Nacimiento: {{ perfil()!.birth_date | date: 'dd/MM/yyyy' }} · No editable</p>
+
+          <div class="acciones">
+            <ion-button fill="outline" type="button" [disabled]="guardando()" (click)="cancelar()">
+              Cancelar
+            </ion-button>
+            <ion-button type="submit" [disabled]="formulario.invalid || guardando()">
+              {{ guardando() ? 'Guardando…' : 'Guardar' }}
+            </ion-button>
+          </div>
+        </form>
+      } @else {
+        <div class="datos">
+          <p class="nombre">{{ perfil()!.first_name }} {{ perfil()!.last_name }}</p>
+          <div class="fila">
+            <p>Edad: {{ edad() }} años</p>
+            <p>Sexo: {{ perfil()!.gender }}</p>
+          </div>
+          @if (perfil()!.weight) {
+            <p class="peso">Peso: {{ perfil()!.weight }} kg</p>
+          }
+          <p class="nacimiento">Nacimiento: {{ perfil()!.birth_date | date: 'dd/MM/yyyy' }}</p>
+          <ion-button fill="outline" type="button" (click)="editar()">Editar perfil</ion-button>
+        </div>
       }
-    </div>
 
-    @if (editando()) {
-      <form #formulario="ngForm" (ngSubmit)="guardar()">
-        <ion-input label="Nombre" labelPlacement="stacked" name="nombre" required [(ngModel)]="borrador.first_name"></ion-input>
-        <ion-input label="Apellido" labelPlacement="stacked" name="apellido" required [(ngModel)]="borrador.last_name"></ion-input>
-        <ion-select label="Sexo" labelPlacement="stacked" name="sexo" required [(ngModel)]="borrador.gender" cancelText="Cancelar" okText="Aceptar">
-          <ion-select-option value="M">M</ion-select-option>
-          <ion-select-option value="F">F</ion-select-option>
-          <ion-select-option value="Otro">Otro</ion-select-option>
-        </ion-select>
-        <p>Edad: {{ edad() }} años</p>
-        <p class="nacimiento">Nacimiento: {{ perfil().birth_date | date: 'dd/MM/yyyy' }} · No editable</p>
-        <div class="acciones">
-          <ion-button fill="outline" type="button" (click)="cancelar()">Cancelar</ion-button>
-          <ion-button type="submit" [disabled]="formulario.invalid || leyendoFoto()">Guardar</ion-button>
-        </div>
-      </form>
-    } @else {
-      <div class="datos">
-        <p class="nombre">{{ perfil().first_name }} {{ perfil().last_name }}</p>
-        <div class="fila">
-          <p>Edad: {{ edad() }} años</p>
-          <p>Sexo: {{ perfil().gender }}</p>
-        </div>
-        <p class="nacimiento">Nacimiento: {{ perfil().birth_date | date: 'dd/MM/yyyy' }}</p>
-        <ion-button fill="outline" type="button" (click)="editar()">Editar perfil</ion-button>
-      </div>
+      @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
+      @if (aviso()) { <p class="aviso" role="status">{{ aviso() }}</p> }
+
+      <ion-card class="estadisticas">
+        <ion-card-content>
+          <h2>Top AlcohilDrink</h2>
+          <dl>
+            <div><dt>Veces curado</dt><dd>{{ vecesCurado() }}</dd></div>
+            <div><dt>Tope de tragos</dt><dd>{{ topeTragos() ?? 'Sin datos' }}</dd></div>
+            <div><dt>Límite histórico</dt><dd>{{ limitePersonal() ?? 'Sin datos' }}</dd></div>
+          </dl>
+          <p class="nota">Límite histórico: mayor consumo registrado en una sesión terminada por embriaguez.</p>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-button
+        class="boton-cerrar-sesion"
+        expand="block"
+        fill="outline"
+        type="button"
+        (click)="cerrarSesion()"
+      >
+        <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
+        Cerrar sesión
+      </ion-button>
     }
-
-    @if (error()) { <p class="error" role="alert">{{ error() }}</p> }
-    @if (aviso()) { <p role="status">{{ aviso() }}</p> }
-
-    <ion-card class="estadisticas">
-      <ion-card-content>
-        <h2>Top AlcohilDrink</h2>
-        <dl>
-          <div><dt>Veces curado</dt><dd>{{ vecesCurado() }}</dd></div>
-          <div><dt>Tope de tragos</dt><dd>{{ topeTragos() ?? 'Sin datos' }}</dd></div>
-          <div><dt>Límite histórico</dt><dd>{{ limitePersonal() ?? 'Sin datos' }}</dd></div>
-        </dl>
-        <p class="nota">Límite histórico: mayor consumo registrado en una sesión terminada por embriaguez.</p>
-      </ion-card-content>
-    </ion-card>
-    <ion-button
-      class="boton-cerrar-sesion"
-      expand="block"
-      fill="outline"
-      type="button"
-      (click)="cerrarSesion()"
-    >
-      <ion-icon slot="start" name="log-out-outline" aria-hidden="true"></ion-icon>
-      Cerrar sesión
-    </ion-button>
   </div>
 </ion-content>

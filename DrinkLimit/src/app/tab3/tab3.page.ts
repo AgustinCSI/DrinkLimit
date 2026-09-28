@@ -1,18 +1,18 @@
-import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput,
-  IonSelect, IonSelectOption, IonCard, IonCardContent, IonNote,
+  IonSelect, IonSelectOption, IonCard, IonCardContent, IonSpinner, IonNote,
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { personOutline, logOutOutline } from 'ionicons/icons';
 import { EncabezadoComponent } from '../components/encabezado/encabezado.component';
-import { Sexo } from '../models/perfil-local.model';
-import { PerfilLocalService } from '../services/perfil-local.service';
 import { HistorialLocalService } from '../services/historial-local.service';
 import { AuthService } from '../services/auth.service';
+import { AppUser, PerfilEditable, UsersService } from '../services/users.service';
+import { FotosService } from '../services/fotos.service';
 
 @Component({
   selector: 'app-tab3',
@@ -20,38 +20,56 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['tab3.page.scss'],
   imports: [
     IonHeader, IonContent, IonAvatar, IonIcon, IonButton, IonInput, IonSelect,
-    IonSelectOption, IonCard, IonCardContent, IonNote, FormsModule, DatePipe, EncabezadoComponent,
+    IonSelectOption, IonCard, IonCardContent, IonSpinner, IonNote, FormsModule, DatePipe, EncabezadoComponent,
   ],
 })
-export class Tab3Page implements OnDestroy {
-  private servicio = inject(PerfilLocalService);
-  private historial = inject(HistorialLocalService);
+export class Tab3Page {
+  private users = inject(UsersService);
   private auth = inject(AuthService);
+  private fotos = inject(FotosService);
   private router = inject(Router);
+  private historial = inject(HistorialLocalService);
 
   private hoy = signal(new Date());
-  private lectorFoto: FileReader | null = null;
+  private userId = '';
 
-  perfil = this.servicio.perfil;
+  perfil = signal<AppUser | null>(null);
+  cargando = signal(true);
+  guardando = signal(false);
+  editando = signal(false);
+  error = signal('');
+  aviso = signal('');
+
+  // Manejo de la foto
+  archivoPendiente = signal<File | null>(null);
+  previewUrl = signal<string | null>(null);
+
+  // Estadísticas del historial
   vecesCurado = this.historial.vecesCurado;
   topeTragos = this.historial.topeTragos;
   limitePersonal = this.historial.limitePersonal;
-  editando = signal(false);
-  leyendoFoto = signal(false);
-  fotoBorrador = signal<string | null>(null);
-  error = signal('');
-  aviso = signal('');
-  borrador: { first_name: string; last_name: string; gender: Sexo } = {
-    first_name: '', last_name: '', gender: 'Otro',
+
+  borrador = {
+    first_name: '',
+    last_name: '',
+    gender: 'Otro',
   };
 
-  fotoVisible = computed(() => this.editando() ? this.fotoBorrador() : this.perfil().foto);
+  fotoVisible = computed(() => {
+    if (this.editando() && this.previewUrl()) {
+      return this.previewUrl();
+    }
+    return this.perfil()?.avatar_url ?? null;
+  });
 
   edad = computed(() => {
-    const [anio, mes, dia] = this.perfil().birth_date.split('-').map(Number);
+    const nacimiento = this.perfil()?.birth_date;
+    if (!nacimiento) return 0;
+    const [anio, mes, dia] = nacimiento.split('-').map(Number);
     const hoy = this.hoy();
     let edad = hoy.getFullYear() - anio!;
-    const faltaCumpleanos = hoy.getMonth() + 1 < mes! ||
+    const faltaCumpleanos =
+      hoy.getMonth() + 1 < mes! ||
       (hoy.getMonth() + 1 === mes! && hoy.getDate() < dia!);
     if (faltaCumpleanos) edad--;
     return edad;
@@ -61,8 +79,121 @@ export class Tab3Page implements OnDestroy {
     addIcons({ personOutline, logOutOutline });
   }
 
-  ionViewWillEnter() {
+  async ionViewWillEnter() {
     this.hoy.set(new Date());
+    await this.cargarPerfil();
+  }
+
+  async cargarPerfil() {
+    this.cargando.set(true);
+    this.error.set('');
+    try {
+      const usuario = await this.auth.usuario();
+      if (!usuario) {
+        await this.router.navigateByUrl('/login', { replaceUrl: true });
+        return;
+      }
+      this.userId = usuario.id;
+      const datos = await this.users.obtener(this.userId);
+      if (datos) {
+        this.perfil.set(datos);
+      }
+    } catch (e: unknown) {
+      console.error(e);
+      this.error.set('No pudimos cargar los datos de tu perfil.');
+    } finally {
+      this.cargando.set(false);
+    }
+  }
+
+  editar() {
+    const p = this.perfil();
+    if (!p) return;
+    this.borrador = {
+      first_name: p.first_name,
+      last_name: p.last_name,
+      gender: p.gender,
+    };
+    this.archivoPendiente.set(null);
+    this.previewUrl.set(null);
+    this.error.set('');
+    this.aviso.set('');
+    this.editando.set(true);
+  }
+
+  cancelar() {
+    this.archivoPendiente.set(null);
+    this.previewUrl.set(null);
+    this.editando.set(false);
+    this.error.set('');
+  }
+
+  seleccionarFoto(evento: Event) {
+    const input = evento.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+    input.value = '';
+
+    if (!archivo) return;
+    this.error.set('');
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
+      this.error.set('Selecciona una imagen en formato JPG, PNG o WebP.');
+      return;
+    }
+    if (archivo.size > 5 * 1024 * 1024) {
+      this.error.set('La imagen debe pesar menos de 5 MB.');
+      return;
+    }
+
+    this.archivoPendiente.set(archivo);
+    this.previewUrl.set(URL.createObjectURL(archivo));
+  }
+
+  async guardar() {
+    const actual = this.perfil();
+    if (!this.editando() || !actual || !this.userId) return;
+
+    const nombre = this.borrador.first_name.trim();
+    const apellido = this.borrador.last_name.trim();
+    if (!nombre || !apellido) {
+      this.error.set('Completa el nombre y el apellido.');
+      return;
+    }
+
+    this.guardando.set(true);
+    this.error.set('');
+
+    try {
+      let avatarUrl = actual.avatar_url ?? null;
+
+      // Si el usuario eligió una foto nueva, la subimos a Supabase Storage
+      const nuevaFoto = this.archivoPendiente();
+      if (nuevaFoto) {
+        avatarUrl = await this.fotos.cargar(nuevaFoto);
+      }
+
+      const datosActualizados: PerfilEditable = {
+        first_name: nombre,
+        last_name: apellido,
+        gender: this.borrador.gender,
+        username: actual.username,
+        birth_date: actual.birth_date,
+        weight: actual.weight,
+        avatar_url: avatarUrl,
+      };
+
+      await this.users.guardarPerfil(this.userId, datosActualizados);
+      this.perfil.set({ id: this.userId, ...datosActualizados });
+      this.archivoPendiente.set(null);
+      this.previewUrl.set(null);
+      this.editando.set(false);
+      this.aviso.set('Perfil actualizado.');
+    } catch (e: unknown) {
+      console.error(e);
+      this.error.set('No se pudo actualizar el perfil.');
+    } finally {
+      this.guardando.set(false);
+    }
   }
 
   async cerrarSesion() {
@@ -72,74 +203,5 @@ export class Tab3Page implements OnDestroy {
     } catch {
       this.error.set('No se pudo cerrar la sesión. Intenta nuevamente.');
     }
-  }
-
-  editar() {
-    const perfil = this.perfil();
-    this.borrador = { first_name: perfil.first_name, last_name: perfil.last_name, gender: perfil.gender };
-    this.fotoBorrador.set(perfil.foto);
-    this.error.set('');
-    this.aviso.set('');
-    this.editando.set(true);
-  }
-
-  cancelar() {
-    this.cancelarLectura();
-    this.editando.set(false);
-    this.error.set('');
-  }
-
-  guardar() {
-    if (!this.editando() || this.leyendoFoto()) return;
-    try {
-      this.servicio.guardar({ ...this.borrador, foto: this.fotoBorrador() });
-      this.editando.set(false);
-      this.error.set('');
-      this.aviso.set('Perfil actualizado.');
-    } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'No se pudo actualizar el perfil.');
-    }
-  }
-
-  seleccionarFoto(evento: Event) {
-    const campo = evento.target as HTMLInputElement;
-    const archivo = campo.files?.[0];
-    campo.value = '';
-    if (!archivo || !this.editando()) return;
-    this.cancelarLectura();
-    this.error.set('');
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
-      this.error.set('Selecciona una imagen JPG, PNG o WebP.');
-      return;
-    }
-    if (archivo.size > 5 * 1024 * 1024) {
-      this.error.set('La imagen debe pesar como máximo 5 MB.');
-      return;
-    }
-
-    const lector = new FileReader();
-    this.lectorFoto = lector;
-    this.leyendoFoto.set(true);
-    lector.onload = () => {
-      if (this.editando() && typeof lector.result === 'string') this.fotoBorrador.set(lector.result);
-      this.leyendoFoto.set(false);
-      this.lectorFoto = null;
-    };
-    lector.onerror = () => {
-      this.error.set('No se pudo leer la imagen. Intenta con otra.');
-      this.leyendoFoto.set(false);
-      this.lectorFoto = null;
-    };
-    lector.readAsDataURL(archivo);
-  }
-
-  ngOnDestroy() {
-    this.cancelarLectura();
-  }
-
-  private cancelarLectura() {
-    this.lectorFoto?.abort();
-    this.lectorFoto = null;
-    this.leyendoFoto.set(false);
   }
 }

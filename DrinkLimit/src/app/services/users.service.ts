@@ -9,6 +9,7 @@ export interface AppUser {
   gender: string;
   username: string;
   weight: number | null;
+  avatar_url?: string | null;
 }
 
 // Lo que se puede editar desde el perfil: todo menos el id (ese lo pone Supabase Auth).
