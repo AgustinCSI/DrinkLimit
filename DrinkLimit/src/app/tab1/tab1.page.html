@@ -13,6 +13,22 @@
     />
 
     <div class="configuracion">
+      @if (cargando()) { <p role="status">Cargando tu sesión…</p> }
+      @if (guardando()) { <p role="status">Guardando…</p> }
+      @if (error()) { <p role="alert">{{ error() }}</p> }
+      @if (requiereRecarga()) {
+        <ion-button (click)="cargar()" [disabled]="cargando() || guardando()">Recargar</ion-button>
+      }
+      @if (cierrePendiente() && !guardando()) {
+        <ion-button (click)="reintentarCierre()">Reintentar cierre</ion-button>
+      }
+      @if (sesionActiva() && ventanasSeleccionadas() === null) {
+        <p>Esta sesión no tiene una duración registrada. Indica cuántas ventanas tenía desde su inicio.</p>
+        <ion-button (click)="abrirSelector()" [disabled]="cargando() || guardando() || requiereRecarga()">Definir ventanas</ion-button>
+      }
+      @if (!cargando() && !requiereRecarga() && !opcionesCervezas().length) {
+        <p>No hay cervezas disponibles en el catálogo.</p>
+      }
       @if (ventanasSeleccionadas() !== null) {
         <p class="resumen">
           Ventanas: {{ ventanasSeleccionadas() }} · Duración: {{ duracionSeleccionada() }}
@@ -24,7 +40,7 @@
         <div class="contador">
           <ion-button
             class="control-consumo" type="button" aria-label="Restar la última cerveza"
-            [disabled]="!sesionActiva() || cantidadCervezas() === 0"
+            [disabled]="!puedeConsumir() || cantidadCervezas() === 0"
             (click)="restarCerveza()"
           >
             <img src="assets/images/cerveza-restar.png" alt="" width="188" height="276" />
@@ -38,7 +54,7 @@
 
           <ion-button
             class="control-consumo" type="button" aria-label="Añadir una cerveza"
-            [disabled]="!sesionActiva()" (click)="abrirSelectorCerveza()"
+            [disabled]="!puedeConsumir() || !opcionesCervezas().length" (click)="abrirSelectorCerveza()"
           >
             <img src="assets/images/cerveza-agregar.png" alt="" width="188" height="276" />
             <span class="simbolo" aria-hidden="true">+</span>
@@ -50,7 +66,7 @@
         }
 
         @if (sesionActiva()) {
-          <ion-button class="boton-detener" type="button" (click)="detenerPorEmbriaguez()">
+          <ion-button class="boton-detener" type="button" [disabled]="!puedeConsumir()" (click)="detenerPorEmbriaguez()">
             Detener: estoy borracho
           </ion-button>
         }
@@ -65,7 +81,11 @@
       }
 
       @if (!sesionActiva()) {
-        <ion-button class="boton-iniciar" type="button" (click)="abrirSelector()">
+        @if (sesionTerminada(); as terminada) {
+          <app-foto-evento [sesionId]="terminada.id" [fotoUrl]="terminada.photo_url ?? null"
+            (ocupada)="guardandoFoto.set($event)"></app-foto-evento>
+        }
+        <ion-button class="boton-iniciar" type="button" [disabled]="cargando() || guardando() || guardandoFoto() || requiereRecarga()" (click)="abrirSelector()">
           Iniciar Ventana
         </ion-button>
       }
@@ -99,7 +119,7 @@
     <app-selector-modal
       titulo="Seleccionar cerveza"
       descripcion="Elige la cerveza que estás tomando. Confirmar registra una unidad."
-      [opciones]="opcionesCervezas"
+      [opciones]="opcionesCervezas()"
       (confirmado)="confirmarCerveza($event)"
       (cancelado)="cerrarSelectorCerveza()"
     ></app-selector-modal>

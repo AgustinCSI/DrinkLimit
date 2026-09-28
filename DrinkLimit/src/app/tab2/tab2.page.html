@@ -4,6 +4,12 @@
 
 <ion-content>
   <div class="historial">
+    @if (historial.cargando()) {
+      <p role="status">Cargando historial…</p>
+    } @else if (historial.error()) {
+      <p role="alert">{{ historial.error() }}</p>
+      <ion-button (click)="historial.cargar()">Reintentar</ion-button>
+    } @else if (historial.cargado()) {
     @for (sesion of sesiones(); track sesion.id; let indice = $index) {
       <ion-card
         class="sesion"
@@ -20,7 +26,9 @@
               <span>Hora: {{ sesion.inicio | date: 'HH:mm' }}</span>
             </h2>
             <p class="cantidad">Cervezas: {{ sesion.consumos.length }}</p>
-            <p>{{ sesion.motivoCierre === 'embriaguez' ? 'Embriaguez declarada' : 'Fin por tiempo' }}</p>
+            <p>{{ sesion.motivoCierre === 'embriaguez' ? 'Embriaguez declarada' : sesion.motivoCierre === 'tiempo' ? 'Fin por tiempo' : 'Motivo no registrado' }}</p>
+            <app-foto-evento [sesionId]="sesion.id" [fotoUrl]="sesion.fotoUrl ?? null"
+              (guardada)="historial.cargar()"></app-foto-evento>
           </div>
         </ion-card-content>
       </ion-card>
@@ -29,6 +37,7 @@
         <h2>Aún no tienes sesiones registradas</h2>
         <p>Las sesiones aparecerán aquí cuando terminen por tiempo o las detengas desde Inicio.</p>
       </div>
+    }
     }
   </div>
 </ion-content>
