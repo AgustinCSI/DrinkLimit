@@ -19,6 +19,12 @@ ion-avatar {
   height: 144px;
   background: #e8f4fa;
   overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 }
 
 ion-avatar ion-icon {
@@ -88,4 +94,8 @@ dd {
 
 .error {
   color: var(--drinklimit-rojo-oscuro);
+}
+
+.boton-cerrar-sesion {
+  margin-top: 24px;
 }
